@@ -210,7 +210,11 @@ export async function indexTemplate() {
   }
 }
 
-export const renderPage = (template, meta) => template.replace('</head>', `  ${headTags(meta)}\n  </head>`);
+// Replaces index.html's default data-seo tags (home page defaults) with this page's tags
+export const renderPage = (template, meta) =>
+  template
+    .replace(/[ \t]*<(title|meta|link|script)\b[^>]*\bdata-seo\b[^>]*>(?:[^<]*<\/\1>)?\n?/g, '')
+    .replace('</head>', `  ${headTags(meta)}\n  </head>`);
 
 // sitemap.xml: public pages, categories and every active product
 export async function sitemapXml() {

@@ -47,7 +47,8 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Home page photos (hero, "Verified" banner, testimonial) are uploaded in Admin > Homepage (`/api/admin/settings/homepage`); empty slots show illustrated fallbacks
 - Storefront buttons are pills via `--btn-radius`; the admin layout sets it to 0 (square). Section titles use the `section-title` / `section-subtitle` utilities
 - Modals (drawers, lightbox) use `hooks/useDialog.js`; anything inside a sticky/transformed parent must be portalled to `document.body`
-- `<title>`/`<meta>` are rendered in page components (React 19 hoists them); keep none in index.html
+- `<title>`/`<meta>` are rendered in page components (React 19 hoists them). index.html only has home-page defaults marked `data-seo` (for crawlers on `/`); `main.jsx` removes every `data-seo` tag on start
+- `ErrorBoundary` (reset on navigation) shows an error page; after a deploy a stale lazy chunk triggers one automatic reload
 
 ## Admin dashboard & settings
 - `/admin` is the dashboard (`GET /api/admin/dashboard`): sales = money received (payment.status paid, not cancelled, dated by `payment.paidAt`; COD counts once delivered), bucketed in Asia/Karachi time — 30 days and 12 months; plus orders by status, top products (12 months, by revenue), low stock, open investigations, recent orders
@@ -79,10 +80,18 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Client: `lib/images.js` adds Cloudinary `f_auto,q_auto,w_*` transforms
 
 ## Deployment
-- Render Blueprint in `render.yaml`, step-by-step guide in `DEPLOY.md` (Render + MongoDB Atlas)
-- One web service: in production Express serves `client/dist` with an SPA fallback (`SERVE_CLIENT`), so site and API share one origin
-- `CLIENT_ORIGIN` defaults to `RENDER_EXTERNAL_URL`; `SEED_ON_START=true` seeds an empty DB and creates the admin (`services/seeding.js`, shared with `npm run seed`)
-- CSP (helmet in `app.js`) allows Google Fonts, `res.cloudinary.com` images, `api.cloudinary.com` uploads and `blob:` previews; update it when adding external hosts
+- Guide: `DEPLOY.md`. Client on Vercel (`client/vercel.json`), API on Render (`render.yaml`, `rootDir: server`) or Railway, MongoDB Atlas, Cloudinary
+- Vercel forwards `/api`, `/uploads`, `/sitemap.xml`, `/robots.txt` and crawler user agents to the server, so the browser sees one origin (first-party SameSite=Lax cookies). The server address is hard-coded in vercel.json (the build fails while it still says YOUR-SERVER)
+- Server env for that setup: `SERVE_CLIENT=false`, `TRUST_PROXY=2`, `CLIENT_URL` = the Vercel address (also the default allowed origin)
+- Alternative single service: Express serves `client/dist` (`SERVE_CLIENT` defaults to true in production)
+- `SEED_ON_START=true` seeds an empty DB and creates the admin (`services/seeding.js`, shared with `npm run seed`)
+- CSP: helmet in `app.js` (API + server-rendered pages) and `headers` in vercel.json (the site); both allow Google Fonts, `res.cloudinary.com` images, `api.cloudinary.com` uploads and `blob:` previews — update both when adding external hosts
+
+## Security & SEO
+- Rate limits: per-IP API ceiling (`API_RATE_LIMIT`), auth/login/register, per-account failed logins (`ACCOUNT_LOGIN_LIMIT`), orders, investigations, uploads, newsletter
+- `middleware/security.js`: rejects unsafe methods from foreign `Origin`s; API responses default to `Cache-Control: no-store` (public endpoints opt in to caching)
+- Uploads: magic-byte sniffing (no SVG/HTML), 10 MB cap, folder allow-lists; only `investigation-reports` accepts PDF
+- `services/seo.js`: page title/description/canonical/Open Graph/JSON-LD rendered into index.html for every storefront route (escaped for HTML and `<script>`), 404 + noindex for unknown/archived products, noindex for private pages; `/sitemap.xml` and `/robots.txt`. `client/public/og-default.jpg` is the fallback preview image
 
 ## Layout
 - root: `scripts/dev.js` runs both apps (no extra dependency)

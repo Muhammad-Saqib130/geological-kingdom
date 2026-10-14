@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== 'test') {
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().int().positive().default(5000),
-  // Defaults to RENDER_EXTERNAL_URL on Render, otherwise the Vite dev server
+  // Defaults to CLIENT_URL, then RENDER_EXTERNAL_URL on Render, otherwise the Vite dev server
   CLIENT_ORIGIN: z.string().optional(),
   MONGODB_URI: z.string().min(1, 'MONGODB_URI is required'),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
@@ -98,7 +98,7 @@ if (!parsed.success) {
 }
 
 const data = parsed.data;
-const clientOrigin = data.CLIENT_ORIGIN || data.RENDER_EXTERNAL_URL || 'http://localhost:5173';
+const clientOrigin = data.CLIENT_ORIGIN || data.CLIENT_URL || data.RENDER_EXTERNAL_URL || 'http://localhost:5173';
 const clientOrigins = clientOrigin.split(',').map((o) => o.trim().replace(/\/$/, ''));
 
 export const env = {
