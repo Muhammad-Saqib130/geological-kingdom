@@ -10,7 +10,7 @@ const promises = [
 ]
 
 export default function Home() {
-  const { data, loading, error } = useApi('/gems?featured=true&limit=4')
+  const { data, loading, error } = useApi('/products?featured=true&limit=4')
 
   return (
     <>

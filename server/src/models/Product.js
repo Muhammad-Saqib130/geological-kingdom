@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import { randomBytes } from 'node:crypto';
 import { slugify } from '../utils/slugify.js';
+import { toJSON } from './plugins.js';
 
-export const GEM_SHAPES = ['Round', 'Oval', 'Cushion', 'Emerald', 'Pear', 'Marquise', 'Heart', 'Princess', 'Trillion', 'Cabochon', 'Rough', 'Other'];
-export const GEM_TREATMENTS = ['None', 'Heated', 'Oiled', 'Irradiated', 'Filled', 'Unknown'];
+export const PRODUCT_SHAPES = ['Round', 'Oval', 'Cushion', 'Emerald', 'Pear', 'Marquise', 'Heart', 'Princess', 'Trillion', 'Cabochon', 'Rough', 'Other'];
+export const PRODUCT_TREATMENTS = ['None', 'Heated', 'Oiled', 'Irradiated', 'Filled', 'Unknown'];
 
 const imageSchema = new mongoose.Schema(
   {
@@ -14,20 +15,21 @@ const imageSchema = new mongoose.Schema(
   { _id: false },
 );
 
-const gemSchema = new mongoose.Schema(
+const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 120 },
-    slug: { type: String, unique: true, index: true },
-    type: { type: String, required: true, trim: true, index: true }, // e.g. Emerald, Ruby, Tourmaline
+    slug: { type: String, unique: true },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true, index: true },
+    sku: { type: String, trim: true, uppercase: true, unique: true, sparse: true },
     color: { type: String, trim: true },
     // Hex used for the placeholder visual when no photo is uploaded yet
     colorHex: { type: String, match: /^#[0-9a-fA-F]{6}$/ },
     carat: { type: Number, required: true, min: 0.01 },
     dimensionsMm: { type: String, trim: true }, // e.g. "8.1 x 6.2 x 4.0"
-    shape: { type: String, enum: GEM_SHAPES, default: 'Other' },
+    shape: { type: String, enum: PRODUCT_SHAPES, default: 'Other' },
     clarity: { type: String, trim: true },
     origin: { type: String, trim: true, index: true }, // e.g. Swat, Pakistan
-    treatment: { type: String, enum: GEM_TREATMENTS, default: 'Unknown' },
+    treatment: { type: String, enum: PRODUCT_TREATMENTS, default: 'Unknown' },
     certificate: { type: String, trim: true }, // lab name / report number
     description: { type: String, maxlength: 5000 },
     // Stored in whole PKR. USD is always derived from the current exchange rate.
@@ -40,21 +42,15 @@ const gemSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-gemSchema.index({ name: 'text', type: 'text', color: 'text', origin: 'text' });
+productSchema.index({ isActive: 1, createdAt: -1 });
+productSchema.index({ isActive: 1, pricePKR: 1 });
 
-gemSchema.pre('validate', function setSlug() {
+productSchema.pre('validate', function setSlug() {
   if (!this.slug || this.isModified('name')) {
     this.slug = `${slugify(this.name)}-${randomBytes(3).toString('hex')}`;
   }
 });
 
-gemSchema.set('toJSON', {
-  versionKey: false,
-  transform: (_doc, ret) => {
-    ret.id = ret._id;
-    delete ret._id;
-    return ret;
-  },
-});
+productSchema.set('toJSON', toJSON);
 
-export const Gem = mongoose.model('Gem', gemSchema);
+export const Product = mongoose.model('Product', productSchema);

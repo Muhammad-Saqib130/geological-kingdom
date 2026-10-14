@@ -13,7 +13,7 @@ export default function GemCard({ gem }) {
           )}
         </div>
         <div className="mt-4 space-y-1">
-          <p className="eyebrow text-[10px]!">{gem.type} · {gem.carat} ct</p>
+          <p className="eyebrow text-[10px]!">{gem.category?.name} · {gem.carat} ct</p>
           <h3 className="text-xl leading-snug group-hover:text-gold-600">{gem.name}</h3>
           <p className="text-sm text-muted">{gem.origin}</p>
           <Price pkr={gem.pricePKR} className="block pt-1 font-medium text-emerald-900" />

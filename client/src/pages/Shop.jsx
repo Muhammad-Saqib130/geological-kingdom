@@ -12,7 +12,7 @@ const SORTS = [
   { value: 'carat-desc', label: 'Carat: largest first' },
 ]
 
-const FILTER_KEYS = ['q', 'type', 'origin', 'minPrice', 'maxPrice', 'minCarat', 'maxCarat']
+const FILTER_KEYS = ['q', 'category', 'origin', 'minPrice', 'maxPrice', 'minCarat', 'maxCarat']
 
 const csvList = (v) => (v ? v.split(',') : [])
 
@@ -20,8 +20,8 @@ export default function Shop() {
   const [params, setParams] = useSearchParams()
   const [filtersOpen, setFiltersOpen] = useState(false)
   const query = Object.fromEntries(params)
-  const { data, loading, error } = useApi(`/gems${toQuery({ limit: 12, ...query })}`)
-  const facets = useApi('/gems/filters').data
+  const { data, loading, error } = useApi(`/products${toQuery({ limit: 12, ...query })}`)
+  const facets = useApi('/products/filters').data
 
   const update = (changes) => {
     const next = new URLSearchParams(params)
@@ -128,8 +128,18 @@ function Filters({ params, facets, update, onClear }) {
         <input id="search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Emerald, Swat…" className="w-full border border-ivory-200 bg-white px-3 py-2" />
       </div>
 
-      <CheckGroup legend="Gemstone" options={facets?.types} selected={csvList(params.get('type'))} onToggle={(v) => toggle('type', v)} />
-      <CheckGroup legend="Origin" options={facets?.origins} selected={csvList(params.get('origin'))} onToggle={(v) => toggle('origin', v)} />
+      <CheckGroup
+        legend="Gemstone"
+        options={facets?.categories.map((c) => ({ value: c.slug, label: c.name }))}
+        selected={csvList(params.get('category'))}
+        onToggle={(v) => toggle('category', v)}
+      />
+      <CheckGroup
+        legend="Origin"
+        options={facets?.origins.map((o) => ({ value: o, label: o }))}
+        selected={csvList(params.get('origin'))}
+        onToggle={(v) => toggle('origin', v)}
+      />
 
       <RangeGroup legend={`Price (${currency})`} values={[price.minPrice, price.maxPrice]} onChange={([minPrice, maxPrice]) => setPrice({ minPrice, maxPrice })} step="1" />
       <RangeGroup legend="Carat" values={[carat.minCarat, carat.maxCarat]} onChange={([minCarat, maxCarat]) => setCarat({ minCarat, maxCarat })} step="0.01" />
@@ -149,10 +159,10 @@ function CheckGroup({ legend, options, selected, onToggle }) {
       <legend className="eyebrow mb-3">{legend}</legend>
       <ul className="space-y-2">
         {options.map((o) => (
-          <li key={o}>
+          <li key={o.value}>
             <label className="flex cursor-pointer items-center gap-2">
-              <input type="checkbox" checked={selected.includes(o)} onChange={() => onToggle(o)} className="h-4 w-4 accent-emerald-900" />
-              {o}
+              <input type="checkbox" checked={selected.includes(o.value)} onChange={() => onToggle(o.value)} className="h-4 w-4 accent-emerald-900" />
+              {o.label}
             </label>
           </li>
         ))}

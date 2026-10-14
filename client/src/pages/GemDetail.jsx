@@ -10,19 +10,19 @@ const WHATSAPP = import.meta.env.VITE_WHATSAPP_NUMBER
 
 export default function GemDetail() {
   const { slug } = useParams()
-  const { data, loading, error } = useApi(`/gems/${encodeURIComponent(slug)}`)
+  const { data, loading, error } = useApi(`/products/${encodeURIComponent(slug)}`)
 
   if (error?.status === 404) return <NotFound />
   if (error) return <p className="mx-auto max-w-7xl px-4 py-24 text-center text-muted">We couldn't load this stone. Please try again.</p>
   if (loading || !data) return <DetailSkeleton />
 
-  return <GemView key={data.gem.id} gem={data.gem} related={data.related} />
+  return <GemView key={data.product.id} gem={data.product} related={data.related} />
 }
 
 function GemView({ gem, related }) {
   const [active, setActive] = useState(0)
   const specs = [
-    ['Gemstone', gem.type],
+    ['Gemstone', gem.category?.name],
     ['Weight', `${gem.carat} ct`],
     ['Shape / cut', gem.shape],
     ['Dimensions', gem.dimensionsMm && `${gem.dimensionsMm} mm`],
@@ -64,7 +64,7 @@ function GemView({ gem, related }) {
         </div>
 
         <div>
-          <p className="eyebrow">{gem.type} · {gem.origin}</p>
+          <p className="eyebrow">{[gem.category?.name, gem.origin].filter(Boolean).join(' · ')}</p>
           <h1 className="mt-3 text-4xl sm:text-5xl">{gem.name}</h1>
           <Price pkr={gem.pricePKR} className="mt-4 block font-serif text-3xl text-emerald-900" />
           {gem.stock === 0 && <p className="mt-2 text-sm uppercase tracking-widest text-muted">Sold</p>}
@@ -94,7 +94,7 @@ function GemView({ gem, related }) {
 
       {related.length > 0 && (
         <section className="mt-24">
-          <h2 className="mb-8 text-3xl sm:text-4xl">More {gem.type.toLowerCase()}s</h2>
+          <h2 className="mb-8 text-3xl sm:text-4xl">More {gem.category?.name ?? 'stones'}</h2>
           <GemGrid gems={related} />
         </section>
       )}
