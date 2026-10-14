@@ -54,6 +54,12 @@ export async function uploadImage(file, folder, { onProgress, signPath } = {}) {
     throw new ApiError(413, `${file.name} is larger than ${Math.round(ticket.maxBytes / 1024 / 1024)} MB`)
   }
 
+  if (ticket.provider === 'demo') {
+    const { demoUpload } = await import('../demo/backend.js')
+    onProgress?.(1)
+    return demoUpload(file)
+  }
+
   if (ticket.provider === 'cloudinary') {
     const form = new FormData()
     for (const [k, v] of Object.entries(ticket.fields)) form.append(k, v)

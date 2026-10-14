@@ -16,6 +16,7 @@ import ProductDetail from './pages/ProductDetail.jsx'
 import Register from './pages/Register.jsx'
 import Shop from './pages/Shop.jsx'
 import { useCurrency } from './store/currencyStore.js'
+import { DEMO } from './lib/api.js'
 
 // Admin code is split into its own bundle so shoppers never download it.
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout.jsx'))
@@ -59,16 +60,23 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
 
-          <Route path="admin" element={<AdminLayout />}>
-            <Route index element={<AdminProducts />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="products/new" element={<ProductForm />} />
-            <Route path="products/:id" element={<ProductForm />} />
-            <Route path="homepage" element={<AdminHomepage />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="orders/:number" element={<AdminOrderDetail />} />
-            <Route path="settings" element={<AdminSettings />} />
-          </Route>
+          {DEMO ? (
+            <Route
+              path="admin/*"
+              element={<ComingSoon eyebrow="Demo preview" title="Admin runs on the live site" body="Managing products, orders and settings needs the real server. This demo shows the shop, cart and checkout." />}
+            />
+          ) : (
+            <Route path="admin" element={<AdminLayout />}>
+              <Route index element={<AdminProducts />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="products/new" element={<ProductForm />} />
+              <Route path="products/:id" element={<ProductForm />} />
+              <Route path="homepage" element={<AdminHomepage />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="orders/:number" element={<AdminOrderDetail />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+          )}
         </Routes>
       </Suspense>
       <Toaster />

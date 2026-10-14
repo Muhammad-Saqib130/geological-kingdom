@@ -15,8 +15,15 @@ export class ApiError extends Error {
   }
 }
 
+export const DEMO = import.meta.env.VITE_DEMO === 'true'
+
 // api('/products') or api('/admin/products', { method: 'POST', json: {...} })
 export async function api(path, { json, headers, ...init } = {}) {
+  // Demo build: answered in the browser (no server); this branch is removed from normal builds
+  if (DEMO) {
+    const { handle } = await import('../demo/backend.js')
+    return handle(path, { method: init.method, body: json })
+  }
   const res = await fetch(`${BASE}/api${path}`, {
     credentials: 'include',
     ...init,

@@ -356,6 +356,7 @@ function CardPanel({ order, act, confirming, cancelledReturn }) {
 
 function CustomerActions({ order, act }) {
   const [busy, setBusy] = useState(false)
+  const [confirming, setConfirming] = useState(false)
   const canCancel = order.status === 'pending' && ['unpaid', 'rejected'].includes(order.payment.status)
   const help = whatsappLink(`Hello Geological Kingdom, I have a question about order ${order.orderNumber}.`)
 
@@ -366,23 +367,38 @@ function CustomerActions({ order, act }) {
           <WhatsAppIcon className="h-5 w-5" /> Questions? WhatsApp us
         </a>
       )}
-      {canCancel && (
+      {canCancel && !confirming && (
         <button
           type="button"
-          disabled={busy}
-          onClick={async () => {
-            if (!window.confirm('Cancel this order? The stones will be released for other buyers.')) return
-            setBusy(true)
-            try {
-              await act('/cancel', { method: 'POST' })
-            } finally {
-              setBusy(false)
-            }
-          }}
+          onClick={() => setConfirming(true)}
           className="block w-full text-center text-xs uppercase tracking-[0.15em] text-muted underline-offset-4 hover:text-red-700 hover:underline"
         >
           Cancel this order
         </button>
+      )}
+      {canCancel && confirming && (
+        <div className="border border-red-200 bg-red-50 p-4 text-center text-sm" role="group" aria-label="Confirm cancellation">
+          <p className="text-red-900">Cancel this order? The stones will be released for other buyers.</p>
+          <div className="mt-3 flex justify-center gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true)
+                try {
+                  await act('/cancel', { method: 'POST' })
+                } finally {
+                  setBusy(false)
+                  setConfirming(false)
+                }
+              }}
+              className="btn-sm border border-red-700 bg-red-700 text-white hover:bg-red-800"
+            >
+              {busy ? 'Cancelling…' : 'Yes, cancel'}
+            </button>
+            <button type="button" onClick={() => setConfirming(false)} className="btn-sm border border-ivory-200 bg-white text-ink">Keep order</button>
+          </div>
+        </div>
       )}
       <Link to="/account/orders" className="block text-center text-xs uppercase tracking-[0.15em] text-emerald-900 underline-offset-4 hover:underline">My orders</Link>
     </section>
