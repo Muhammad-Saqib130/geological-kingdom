@@ -53,10 +53,10 @@ export default function Shop() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
       <title>{`${title ? `${title} gemstones` : 'Shop natural gemstones'} · Geological Kingdom`}</title>
-      <header className="mb-8 text-center">
-        <p className="eyebrow">Loose gemstones</p>
-        <h1 className="mt-2 text-5xl sm:text-6xl">{title ?? 'The Collection'}</h1>
-        {filters.q && <p className="mt-3 text-muted">Results for “{filters.q}”</p>}
+      <header className="mb-10">
+        <h1 className="section-title">{title ?? 'The Collection'}</h1>
+        <p className="section-subtitle">{filters.q ? `Results for “${filters.q}”` : 'Natural loose gemstones'}</p>
+        <span className="mx-auto mt-5 block h-px w-14 bg-gold-500" aria-hidden="true" />
       </header>
 
       <div className="sticky top-16 z-30 -mx-4 mb-6 flex items-center justify-between gap-3 border-y border-ivory-200 bg-ivory-50/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:backdrop-blur-none">

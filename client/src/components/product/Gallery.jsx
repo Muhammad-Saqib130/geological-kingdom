@@ -27,7 +27,7 @@ export default function Gallery({ product }) {
   }
 
   return (
-    <div className="lg:sticky lg:top-28">
+    <div className="lg:sticky lg:top-20">
       <div className="relative">
         <button
           type="button"

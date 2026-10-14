@@ -30,7 +30,8 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-dvh bg-ivory-100">
+    // Admin keeps square buttons (storefront buttons are pills)
+    <div className="min-h-dvh bg-ivory-100" style={{ '--btn-radius': 0 }}>
       <header className="sticky top-0 z-40 border-b border-ivory-200 bg-white">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:gap-6 sm:px-6">
           <Logo />

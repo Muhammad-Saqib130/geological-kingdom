@@ -12,7 +12,7 @@ export default function CurrencyToggle({ dark = false }) {
   const s = styles[dark ? 'dark' : 'light']
 
   return (
-    <div role="group" aria-label="Currency" className={`flex border text-xs font-medium tracking-wider ${s.group}`}>
+    <div role="group" aria-label="Currency" className={`flex overflow-hidden rounded-full border text-xs font-medium tracking-wider ${s.group}`}>
       {['PKR', 'USD'].map((c) => (
         <button
           key={c}
@@ -20,7 +20,7 @@ export default function CurrencyToggle({ dark = false }) {
           aria-pressed={currency === c}
           disabled={c === 'USD' && !rateReady}
           onClick={() => setCurrency(c)}
-          className={`px-2.5 py-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${currency === c ? s.on : s.off}`}
+          className={`rounded-full px-3 py-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${currency === c ? s.on : s.off}`}
         >
           {c}
         </button>

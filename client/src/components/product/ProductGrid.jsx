@@ -1,6 +1,6 @@
 import ProductCard from './ProductCard.jsx'
 
-const layout = 'grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4'
+const layout = 'grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-4'
 
 export function ProductGridSkeleton({ count = 8, className = layout }) {
   return (

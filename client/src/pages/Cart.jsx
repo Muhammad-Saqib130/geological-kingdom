@@ -67,7 +67,8 @@ export default function Cart() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
       <title>Your cart · Geological Kingdom</title>
-      <h1 className="text-5xl">Your cart</h1>
+      <h1 className="section-title">Your cart</h1>
+      <span className="mx-auto mt-5 block h-px w-14 bg-gold-500" aria-hidden="true" />
 
       {notices.length > 0 && (
         <ul role="status" className="mt-6 space-y-1 border border-gold-500/40 bg-gold-500/10 px-4 py-3 text-sm text-ink">
@@ -85,7 +86,7 @@ export default function Cart() {
           {items.map((item) => <CartLine key={item.productId} item={item} />)}
         </ul>
 
-        <aside className="h-fit border border-ivory-200 bg-white p-6 lg:sticky lg:top-28" aria-labelledby="summary">
+        <aside className="h-fit border border-ivory-200 bg-white p-6 lg:sticky lg:top-20" aria-labelledby="summary">
           <h2 id="summary" className="text-2xl">Order summary</h2>
           <dl className="mt-6 space-y-3 text-sm">
             <div className="flex justify-between">

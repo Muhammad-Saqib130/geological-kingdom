@@ -13,6 +13,8 @@
   --color-ivory-100: #f6f2e9;
   --color-ivory-200: #ebe4d4;
   --color-ink: #1c1f1d;
+  --color-mist: #efede8; /* light grey bands (trust strip, newsletter) */
+  --color-night: #0d1512; /* near-black for dark photographic banners */
   --color-muted: #5f665f;
 
   --font-serif: 'Cormorant Garamond', ui-serif, Georgia, serif;
@@ -22,6 +24,8 @@
 @layer base {
   html {
     @apply bg-ivory-50 text-ink font-sans antialiased;
+    /* Storefront buttons are pills; the admin layout sets this to 0 */
+    --btn-radius: 9999px;
   }
   h1, h2, h3, h4 {
     @apply font-serif font-medium tracking-tight text-emerald-900;
@@ -37,6 +41,39 @@
 
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium uppercase tracking-[0.15em] transition-colors disabled:opacity-50;
+  border-radius: var(--btn-radius, 9999px);
+}
+
+/* Small pill used on cards ("Shop now") */
+@utility btn-sm {
+  @apply btn px-5 py-2 text-[11px] tracking-[0.18em];
+}
+
+/* White pill on dark banners */
+@utility btn-light {
+  @apply btn bg-ivory-50 text-emerald-950 hover:bg-gold-300;
+}
+
+/* Centred section title with a spaced subtitle underneath */
+@utility section-title {
+  @apply text-center font-serif text-3xl font-medium uppercase tracking-[0.12em] text-emerald-900 sm:text-4xl sm:tracking-[0.14em] lg:text-[2.6rem];
+}
+@utility section-subtitle {
+  @apply mt-2 text-center text-[11px] font-medium uppercase tracking-[0.35em] text-muted;
+}
+
+/* Dark, finely speckled backdrop that evokes gem dust on slate */
+@utility bg-sparkle {
+  background-color: var(--color-night);
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.55), transparent 60%),
+    radial-gradient(1px 1px at 72% 34%, rgba(230, 207, 148, 0.6), transparent 60%),
+    radial-gradient(1.5px 1.5px at 38% 72%, rgba(255, 255, 255, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 88% 82%, rgba(230, 207, 148, 0.5), transparent 60%),
+    radial-gradient(1px 1px at 55% 12%, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(60% 80% at 70% 50%, rgba(27, 106, 83, 0.35), transparent 70%),
+    radial-gradient(40% 60% at 15% 80%, rgba(201, 162, 75, 0.12), transparent 70%);
+  background-size: 120px 120px, 160px 160px, 200px 200px, 140px 140px, 90px 90px, 100% 100%, 100% 100%;
 }
 
 @utility btn-primary {

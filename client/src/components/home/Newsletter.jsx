@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { api } from '../../lib/api.js'
 import { CheckIcon } from '../icons.jsx'
 
+// Slim band: heading on the left, inline email field on the right.
 export default function Newsletter() {
   const [email, setEmail] = useState('')
   const [state, setState] = useState({ status: 'idle', message: '' })
@@ -19,39 +20,40 @@ export default function Newsletter() {
   }
 
   return (
-    <section aria-labelledby="newsletter" className="border-t border-ivory-200 bg-ivory-100">
-      <div className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
-        <p className="eyebrow">The first look</p>
-        <h2 id="newsletter" className="mt-2 text-4xl sm:text-5xl">New stones, before anyone else</h2>
-        <p className="mx-auto mt-4 max-w-lg text-muted">
-          One-of-a-kind gems sell quickly. Join the list and we will write when new stones arrive from the mountains. No spam, unsubscribe any time.
-        </p>
+    <section aria-labelledby="newsletter" className="bg-mist">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-12 sm:px-6 lg:flex-row lg:justify-between">
+        <div className="text-center lg:text-left">
+          <h2 id="newsletter" className="font-serif text-2xl uppercase tracking-[0.14em] text-emerald-900 sm:text-3xl">Get new stones first</h2>
+          <p className="mt-1 text-sm text-muted">One-of-a-kind gems sell quickly. We write only when new stones arrive.</p>
+        </div>
 
         {state.status === 'done' ? (
-          <p role="status" className="mx-auto mt-10 inline-flex items-center gap-3 border border-emerald-900/20 bg-white px-6 py-4 text-emerald-900">
+          <p role="status" className="inline-flex items-center gap-2 text-sm text-emerald-900">
             <CheckIcon className="h-5 w-5" strokeWidth={2} /> {state.message}
           </p>
         ) : (
-          <form onSubmit={submit} className="mx-auto mt-10 flex max-w-md flex-col gap-3 sm:flex-row" noValidate>
-            <label htmlFor="newsletter-email" className="sr-only">Email address</label>
-            <input
-              id="newsletter-email"
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              aria-invalid={state.status === 'error' || undefined}
-              aria-describedby={state.status === 'error' ? 'newsletter-error' : undefined}
-              className="min-w-0 flex-1 border border-ivory-200 bg-white px-4 py-3 text-sm focus:border-emerald-700 focus:outline-none"
-            />
-            <button type="submit" className="btn-primary" disabled={state.status === 'sending' || !email}>
-              {state.status === 'sending' ? 'Joining…' : 'Join the list'}
-            </button>
-          </form>
+          <div className="w-full max-w-md">
+            <form onSubmit={submit} className="flex rounded-full border border-ivory-200 bg-white p-1 focus-within:border-emerald-700" noValidate>
+              <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+              <input
+                id="newsletter-email"
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your email address"
+                aria-invalid={state.status === 'error' || undefined}
+                aria-describedby={state.status === 'error' ? 'newsletter-error' : undefined}
+                className="min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm focus:outline-none"
+              />
+              <button type="submit" className="btn-sm btn-primary py-2.5!" disabled={state.status === 'sending'}>
+                {state.status === 'sending' ? 'Joining…' : 'Subscribe'}
+              </button>
+            </form>
+            {state.status === 'error' && <p id="newsletter-error" role="alert" className="mt-2 px-4 text-sm text-red-700">{state.message}</p>}
+          </div>
         )}
-        {state.status === 'error' && <p id="newsletter-error" role="alert" className="mt-3 text-sm text-red-700">{state.message}</p>}
       </div>
     </section>
   )
