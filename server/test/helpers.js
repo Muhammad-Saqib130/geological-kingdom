@@ -9,6 +9,10 @@ let mongod;
 let server;
 let mongoose;
 export let uploadDir;
+export let mailDir;
+// True when MONGODB_URI_TEST points at FerretDB, which lacks atomic single-document updates
+export let isFerretDB = false;
+export const STRIPE_WEBHOOK_SECRET = 'whsec_test_secret';
 
 export async function startTestServer() {
   let uri = process.env.MONGODB_URI_TEST;
@@ -25,12 +29,19 @@ export async function startTestServer() {
   const { mkdtemp } = await import('node:fs/promises');
   const { tmpdir } = await import('node:os');
   uploadDir = await mkdtemp(`${tmpdir()}/gk-uploads-`);
+  mailDir = await mkdtemp(`${tmpdir()}/gk-mail-`);
 
   // Cloudinary is never used in tests; clear anything inherited from the shell.
-  for (const key of ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET']) delete process.env[key];
+  for (const key of ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET', 'SMTP_HOST']) delete process.env[key];
 
   Object.assign(process.env, {
     LOCAL_UPLOAD_DIR: uploadDir,
+    MAIL_OUTBOX_DIR: mailDir,
+    CLIENT_URL: 'http://shop.test',
+    // Card checkout enabled; tests swap in a stub client (no network)
+    STRIPE_SECRET_KEY: 'sk_test_dummy',
+    STRIPE_WEBHOOK_SECRET,
+    ORDER_RATE_LIMIT: '10000',
     NODE_ENV: 'test',
     MONGODB_URI: uri,
     JWT_SECRET: TEST_JWT_SECRET,
@@ -48,6 +59,8 @@ export async function startTestServer() {
   const { createApp } = await import('../src/app.js');
 
   await connectDB();
+  const info = await mongoose.connection.db.admin().command({ buildInfo: 1 });
+  isFerretDB = Boolean(info.ferretdbVersion);
   await mongoose.connection.dropDatabase();
   await Promise.all(Object.values(mongoose.models).map((m) => m.syncIndexes()));
 
@@ -63,7 +76,9 @@ export async function stopTestServer() {
     await mongoose.disconnect();
   }
   await mongod?.stop();
-  if (uploadDir) await (await import('node:fs/promises')).rm(uploadDir, { recursive: true, force: true });
+  const { rm } = await import('node:fs/promises');
+  if (uploadDir) await rm(uploadDir, { recursive: true, force: true });
+  if (mailDir) await rm(mailDir, { recursive: true, force: true });
 }
 
 // Creates a user with the given role directly in the database and signs them in.

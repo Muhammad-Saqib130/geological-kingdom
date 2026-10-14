@@ -31,6 +31,21 @@ const schema = z.object({
   CLOUDINARY_FOLDER: z.string().trim().regex(/^[a-z0-9_-]+$/i).default('geological-kingdom'),
   // Where local (non-Cloudinary) uploads are written. Defaults to server/uploads.
   LOCAL_UPLOAD_DIR: z.string().optional(),
+  // Public URL of the storefront, used in emails and payment redirects (defaults to the first CLIENT_ORIGIN)
+  CLIENT_URL: z.string().url().optional(),
+  // Stripe (card payments). Card checkout is offered only when the secret key is set.
+  STRIPE_SECRET_KEY: z.string().trim().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().trim().optional(),
+  // Email. Without SMTP_HOST, emails are written as .eml files to MAIL_OUTBOX_DIR (development).
+  SMTP_HOST: z.string().trim().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(587),
+  SMTP_SECURE: z.enum(['true', 'false']).default('false'),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  MAIL_FROM: z.string().default('Geological Kingdom <orders@geologicalkingdom.example>'),
+  MAIL_OUTBOX_DIR: z.string().optional(),
+  // New orders per IP per hour
+  ORDER_RATE_LIMIT: z.coerce.number().int().min(1).default(20),
   // Seed-only: initial admin account (see `npm run seed`)
   ADMIN_EMAIL: z.string().optional(),
   ADMIN_PASSWORD: z.string().optional(),
@@ -66,4 +81,6 @@ export const env = {
   clientOrigins: parsed.data.CLIENT_ORIGIN.split(',').map((o) => o.trim()),
   isProd: parsed.data.NODE_ENV === 'production',
   cloudinaryEnabled: Boolean(parsed.data.CLOUDINARY_CLOUD_NAME),
+  stripeEnabled: Boolean(parsed.data.STRIPE_SECRET_KEY),
+  clientUrl: (parsed.data.CLIENT_URL ?? parsed.data.CLIENT_ORIGIN.split(',')[0].trim()).replace(/\/$/, ''),
 };

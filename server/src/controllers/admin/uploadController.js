@@ -3,8 +3,10 @@ import * as local from '../../services/storage/local.js';
 import { MAX_UPLOAD_BYTES, UPLOAD_FOLDERS, storage } from '../../services/storage/index.js';
 import { AppError } from '../../utils/AppError.js';
 
-export const signBody = z.object({ folder: z.enum(UPLOAD_FOLDERS) });
-export const localQuery = z.object({ folder: z.enum(UPLOAD_FOLDERS) });
+// Customers upload payment proofs through their order's own endpoints, not here.
+const ADMIN_FOLDERS = UPLOAD_FOLDERS.filter((f) => f !== 'payment-proofs');
+export const signBody = z.object({ folder: z.enum(ADMIN_FOLDERS) });
+export const localQuery = z.object({ folder: z.enum(ADMIN_FOLDERS) });
 
 // Returns what the browser needs to upload one file directly to storage.
 export function signUpload(req, res) {

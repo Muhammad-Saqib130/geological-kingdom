@@ -1,6 +1,7 @@
 import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { createApp } from './app.js';
+import { startOrderExpiryJob } from './jobs/expireOrders.js';
 
 try {
   await connectDB();
@@ -9,6 +10,8 @@ try {
   console.error('Check MONGODB_URI in server/.env and that your IP is allowed in Atlas Network Access.');
   process.exit(1);
 }
+
+startOrderExpiryJob();
 
 const server = createApp().listen(env.PORT, () => {
   console.log(`API listening on http://localhost:${env.PORT} (${env.NODE_ENV})`);

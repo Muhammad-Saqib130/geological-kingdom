@@ -4,6 +4,7 @@ import adminRoutes from './admin/index.js';
 import authRoutes from './authRoutes.js';
 import categoryRoutes from './categoryRoutes.js';
 import productRoutes from './productRoutes.js';
+import orderRoutes from './orderRoutes.js';
 import settingsRoutes from './settingsRoutes.js';
 import storefrontRoutes from './storefrontRoutes.js';
 
@@ -24,5 +25,6 @@ router.use('/categories', categoryRoutes);
 router.use('/products', productRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/', storefrontRoutes);
+router.use('/', orderRoutes);
 
 export default router;

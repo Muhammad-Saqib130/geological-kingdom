@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { env } from './config/env.js';
+import { stripeWebhook } from './controllers/webhookController.js';
 import { authenticate } from './middleware/auth.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import apiRoutes from './routes/index.js';
@@ -17,6 +18,8 @@ export function createApp() {
   if (env.isProd) app.set('trust proxy', 1);
   app.use(helmet());
   app.use(cors({ origin: env.clientOrigins, credentials: true }));
+  // Stripe signs the raw body, so the webhook must be registered before the JSON parser
+  app.post('/api/webhooks/stripe', express.raw({ type: 'application/json', limit: '1mb' }), stripeWebhook);
   app.use(express.json({ limit: '1mb' }));
   app.use(cookieParser());
   app.use(authenticate);

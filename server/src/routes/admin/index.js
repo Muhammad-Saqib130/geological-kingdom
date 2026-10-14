@@ -11,6 +11,20 @@ import {
   updateProduct,
   updateProductBody,
 } from '../../controllers/admin/productAdminController.js';
+import {
+  approveProof,
+  getOrder,
+  getStoreSettings,
+  listOrders,
+  listQuery as orderListQuery,
+  orderParams,
+  rejectBody,
+  rejectProof,
+  statusBody,
+  storeSettingsBody,
+  updateStatus,
+  updateStoreSettings,
+} from '../../controllers/admin/orderAdminController.js';
 import { getHomepage, homepageBody, updateHomepage } from '../../controllers/admin/settingsAdminController.js';
 import { localQuery, signBody, signUpload, uploadLocal } from '../../controllers/admin/uploadController.js';
 import { requireAdmin } from '../../middleware/auth.js';
@@ -36,6 +50,15 @@ router.get('/categories', listCategoryOptions);
 
 router.get('/settings/homepage', getHomepage);
 router.put('/settings/homepage', validate(homepageBody), updateHomepage);
+router.get('/settings/store', getStoreSettings);
+router.put('/settings/store', validate(storeSettingsBody), updateStoreSettings);
+
+const withOrder = validate(orderParams, 'params');
+router.get('/orders', validate(orderListQuery, 'query'), listOrders);
+router.get('/orders/:number', withOrder, getOrder);
+router.patch('/orders/:number/status', withOrder, validate(statusBody), updateStatus);
+router.post('/orders/:number/payment/approve', withOrder, approveProof);
+router.post('/orders/:number/payment/reject', withOrder, validate(rejectBody), rejectProof);
 
 router.post('/uploads/sign', validate(signBody), signUpload);
 router.post(

@@ -10,7 +10,7 @@ export const UPLOAD_DIR = env.LOCAL_UPLOAD_DIR
   ? path.resolve(env.LOCAL_UPLOAD_DIR)
   : fileURLToPath(new URL('../../../uploads', import.meta.url));
 const ACCEPT = ['jpg', 'png', 'webp', 'gif', 'avif'];
-const ID_PATTERN = /^local\/(products|certificates|banners)\/[a-f0-9]{32}\.(jpg|png|webp|gif|avif)$/;
+const ID_PATTERN = /^local\/(products|certificates|banners|payment-proofs)\/[a-f0-9]{32}\.(jpg|png|webp|gif|avif)$/;
 
 export function signUpload(folder, { maxBytes }) {
   return {
