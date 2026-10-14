@@ -73,3 +73,10 @@ export async function logoutAll(req, res) {
 export function me(req, res) {
   res.json({ user: req.user });
 }
+
+// Like /me, but answers 200 { user: null } for guests, so storefront pages can check the
+// session on every load without logging an error for each anonymous visitor.
+export function session(req, res) {
+  res.set('Cache-Control', 'no-store');
+  res.json({ user: req.user ?? null });
+}

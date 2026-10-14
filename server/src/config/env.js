@@ -20,6 +20,10 @@ const schema = z.object({
   COOKIE_SAMESITE: z.enum(['lax', 'strict', 'none']).default('lax'),
   // Max login attempts per email+IP in 15 minutes
   LOGIN_RATE_LIMIT: z.coerce.number().int().min(1).default(10),
+  // All auth requests (login + register) per IP in 15 minutes
+  AUTH_IP_RATE_LIMIT: z.coerce.number().int().min(1).default(100),
+  // New accounts per IP per hour
+  REGISTER_RATE_LIMIT: z.coerce.number().int().min(1).default(20),
   // Image storage. All three set = Cloudinary; none set = local files (development only).
   CLOUDINARY_CLOUD_NAME: z.string().trim().optional(),
   CLOUDINARY_API_KEY: z.string().trim().optional(),

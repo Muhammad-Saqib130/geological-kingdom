@@ -19,7 +19,7 @@ export const loginLimiter = rateLimit({
 // Coarse per-IP ceiling for all auth endpoints (stops spraying many emails from one address).
 export const authIpLimiter = rateLimit({
   windowMs: FIFTEEN_MINUTES,
-  limit: 100,
+  limit: env.AUTH_IP_RATE_LIMIT,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: message('Too many requests. Please try again later.'),
@@ -27,7 +27,7 @@ export const authIpLimiter = rateLimit({
 
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  limit: 20,
+  limit: env.REGISTER_RATE_LIMIT,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: message('Too many accounts created from this network. Please try again later.'),

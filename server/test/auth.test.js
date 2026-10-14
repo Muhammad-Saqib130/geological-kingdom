@@ -20,6 +20,13 @@ const PASSWORD = 'correct horse battery';
 const register = (client, overrides = {}) =>
   client.post('/api/auth/register', { name: 'Test User', email: uniqueEmail(), password: PASSWORD, ...overrides });
 
+// For tests that need an account to exist: any non-201 is a setup failure, not a silent skip.
+const registerOk = async (client, overrides) => {
+  const res = await register(client, overrides);
+  assert.equal(res.status, 201, `setup registration failed: ${res.status} ${JSON.stringify(res.data)}`);
+  return res;
+};
+
 const sessionCookie = (res) => res.setCookies.find((c) => c.startsWith('gk_session='));
 
 // Signs a token with the given payload/options, for crafting expired or forged sessions.
@@ -56,7 +63,7 @@ describe('POST /api/auth/register', () => {
 
   it('stores a bcrypt hash, never the plain password', async () => {
     const email = uniqueEmail('hash');
-    await register(createClient(baseUrl), { email });
+    await registerOk(createClient(baseUrl), { email });
     const user = await User.findOne({ email }).select('+passwordHash');
 
     assert.match(user.passwordHash, /^\$2[aby]\$12\$/);
@@ -113,7 +120,7 @@ describe('POST /api/auth/login', () => {
   let email;
   before(async () => {
     email = uniqueEmail('login');
-    await register(createClient(baseUrl), { email });
+    await registerOk(createClient(baseUrl), { email });
   });
 
   it('signs in with valid credentials (email is case-insensitive)', async () => {
@@ -146,7 +153,7 @@ describe('POST /api/auth/login', () => {
 
   it('throttles repeated failures for one account without blocking other accounts', async () => {
     const victim = uniqueEmail('victim');
-    await register(createClient(baseUrl), { email: victim });
+    await registerOk(createClient(baseUrl), { email: victim });
     const attempt = (e, password = 'wrong password') => createClient(baseUrl).post('/api/auth/login', { email: e, password });
 
     for (let i = 0; i < 5; i += 1) assert.equal((await attempt(victim)).status, 401); // LOGIN_RATE_LIMIT=5 in tests
@@ -169,7 +176,7 @@ describe('GET /api/auth/me', () => {
   it('returns the signed-in user', async () => {
     const client = createClient(baseUrl);
     const email = uniqueEmail('me');
-    await register(client, { email });
+    await registerOk(client, { email });
     const res = await client.get('/api/auth/me');
 
     assert.equal(res.status, 200);
@@ -179,7 +186,7 @@ describe('GET /api/auth/me', () => {
 
   it('rejects and clears a tampered token', async () => {
     const client = createClient(baseUrl);
-    await register(client);
+    await registerOk(client);
     const [header, , signature] = client.cookie.split('.');
     const fakePayload = Buffer.from(JSON.stringify({ sub: '000000000000000000000000', ver: 0 })).toString('base64url');
     client.cookie = `${header}.${fakePayload}.${signature}`;
@@ -191,14 +198,14 @@ describe('GET /api/auth/me', () => {
 
   it('rejects a token signed with another secret', async () => {
     const client = createClient(baseUrl);
-    const { data } = await register(client);
+    const { data } = await registerOk(client);
     client.cookie = forge({ ver: 0 }, 'some-other-secret-that-is-long-enough-to-pass', { subject: data.user.id });
     assert.equal((await client.get('/api/auth/me')).status, 401);
   });
 
   it('rejects an unsigned ("alg: none") token', async () => {
     const client = createClient(baseUrl);
-    const { data } = await register(client);
+    const { data } = await registerOk(client);
     const part = (obj) => Buffer.from(JSON.stringify(obj)).toString('base64url');
     client.cookie = `gk_session=${part({ alg: 'none', typ: 'JWT' })}.${part({ sub: data.user.id, ver: 0 })}.`;
     assert.equal((await client.get('/api/auth/me')).status, 401);
@@ -206,23 +213,38 @@ describe('GET /api/auth/me', () => {
 
   it('rejects an expired token', async () => {
     const client = createClient(baseUrl);
-    const { data } = await register(client);
+    const { data } = await registerOk(client);
     client.cookie = forge({ ver: 0, exp: Math.floor(Date.now() / 1000) - 60 }, TEST_JWT_SECRET, { subject: data.user.id });
     assert.equal((await client.get('/api/auth/me')).status, 401);
   });
 
   it('rejects the session of a deleted account', async () => {
     const client = createClient(baseUrl);
-    const { data } = await register(client);
+    const { data } = await registerOk(client);
     await User.deleteOne({ _id: data.user.id });
     assert.equal((await client.get('/api/auth/me')).status, 401);
+  });
+});
+
+describe('GET /api/auth/session', () => {
+  it('returns null for guests (200) and the user when signed in', async () => {
+    const guest = await createClient(baseUrl).get('/api/auth/session');
+    assert.equal(guest.status, 200);
+    assert.equal(guest.data.user, null);
+
+    const client = createClient(baseUrl);
+    const email = uniqueEmail('session');
+    await registerOk(client, { email });
+    const res = await client.get('/api/auth/session');
+    assert.equal(res.data.user.email, email);
+    assert.equal(res.data.user.passwordHash, undefined);
   });
 });
 
 describe('POST /api/auth/logout and /logout-all', () => {
   it('logout clears the session cookie', async () => {
     const client = createClient(baseUrl);
-    await register(client);
+    await registerOk(client);
 
     const res = await client.post('/api/auth/logout');
     assert.equal(res.status, 204);
@@ -238,7 +260,7 @@ describe('POST /api/auth/logout and /logout-all', () => {
     const email = uniqueEmail('devices');
     const laptop = createClient(baseUrl);
     const phone = createClient(baseUrl);
-    await register(laptop, { email });
+    await registerOk(laptop, { email });
     await phone.post('/api/auth/login', { email, password: PASSWORD });
     assert.equal((await phone.get('/api/auth/me')).status, 200);
 

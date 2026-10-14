@@ -37,6 +37,9 @@ export async function startTestServer() {
     SESSION_TTL_DAYS: '7',
     COOKIE_SAMESITE: 'lax',
     LOGIN_RATE_LIMIT: '5',
+    // Every test request comes from 127.0.0.1; keep the per-IP ceiling out of the way
+    AUTH_IP_RATE_LIMIT: '10000',
+    REGISTER_RATE_LIMIT: '10000',
     CLIENT_ORIGIN: 'http://localhost:5173',
   });
 
