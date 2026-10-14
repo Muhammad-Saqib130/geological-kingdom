@@ -210,7 +210,7 @@ function PaymentPanel({ order, act, token, confirming, cancelledReturn }) {
       <section className={`${box} border-amber-200 bg-amber-50`}>
         <h2 className="font-serif text-2xl uppercase tracking-[0.12em]">Proof received</h2>
         <p className="mt-2 text-sm text-ink">Thank you. We are checking your payment and will confirm shortly, usually within a few hours.</p>
-        {lastProof && <img src={imageUrl(lastProof.image.url, { width: 400 })} alt="Your payment screenshot" className="mt-4 max-h-48 border border-amber-200 bg-white object-contain" />}
+        {lastProof && <img loading="lazy" decoding="async" src={imageUrl(lastProof.image.url, { width: 400 })} alt="Your payment screenshot" className="mt-4 max-h-48 border border-amber-200 bg-white object-contain" />}
       </section>
     )
   }
@@ -303,7 +303,7 @@ function ProofUpload({ order, act, token }) {
       <p className="text-sm font-semibold text-ink">Then upload your payment screenshot</p>
       <div className="mt-3 grid gap-4 sm:grid-cols-[160px_1fr]">
         <label className={`flex h-36 cursor-pointer items-center justify-center overflow-hidden border-2 border-dashed text-center text-xs text-emerald-900 sm:h-auto sm:aspect-square ${preview ? 'border-emerald-700' : 'border-ivory-200 hover:border-emerald-700'}`}>
-          {preview ? <img src={preview} alt="Selected screenshot" className="h-full w-full object-contain sm:object-cover" /> : <span className="px-3">+ Choose screenshot<br /><span className="text-muted">JPG, PNG or WebP</span></span>}
+          {preview ? <img loading="lazy" decoding="async" src={preview} alt="Selected screenshot" className="h-full w-full object-contain sm:object-cover" /> : <span className="px-3">+ Choose screenshot<br /><span className="text-muted">JPG, PNG or WebP</span></span>}
           <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,.heic" hidden onChange={(e) => pick(e.target.files[0])} aria-label="Choose payment screenshot" />
         </label>
         <div className="space-y-3">

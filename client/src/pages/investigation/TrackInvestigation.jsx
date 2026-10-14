@@ -131,7 +131,7 @@ function Result({ inv, onBack }) {
           <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
             {[...inv.photos, ...(inv.certificate ? [inv.certificate] : [])].map((p, i) => (
               <li key={p.publicId} className="aspect-square overflow-hidden border border-ivory-200 bg-ivory-50">
-                <img src={imageUrl(p.url, { width: 240 })} alt={p === inv.certificate ? 'Certificate' : `Photo ${i + 1}`} className="h-full w-full object-cover" />
+                <img loading="lazy" decoding="async" src={imageUrl(p.url, { width: 240 })} alt={p === inv.certificate ? 'Certificate' : `Photo ${i + 1}`} className="h-full w-full object-cover" />
               </li>
             ))}
           </ul>

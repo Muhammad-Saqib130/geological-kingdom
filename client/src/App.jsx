@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import Layout from './components/layout/Layout.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
 import Toaster from './components/Toaster.jsx'
@@ -35,11 +36,13 @@ const AdminInvestigationDetail = lazy(() => import('./pages/admin/AdminInvestiga
 const Loading = () => <p className="p-10 text-center text-sm text-muted" role="status">Loading…</p>
 
 export default function App() {
+  const { pathname } = useLocation()
   useEffect(() => { loadStoreInfo() }, [])
 
   return (
     <>
       <ScrollToTop />
+      <ErrorBoundary resetKey={pathname}>
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route element={<Layout />}>
@@ -84,6 +87,7 @@ export default function App() {
           )}
         </Routes>
       </Suspense>
+      </ErrorBoundary>
       <Toaster />
     </>
   )

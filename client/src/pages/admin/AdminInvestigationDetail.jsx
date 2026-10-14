@@ -84,7 +84,7 @@ export default function AdminInvestigationDetail() {
               {inv.photos.map((p, i) => (
                 <li key={p.publicId}>
                   <a href={p.url} target="_blank" rel="noreferrer" className="block aspect-square overflow-hidden border border-ivory-200 bg-ivory-50" title="Open full size">
-                    <img src={imageUrl(p.url, { width: 480 })} alt={`Customer photo ${i + 1}`} className="h-full w-full object-cover" />
+                    <img loading="lazy" decoding="async" src={imageUrl(p.url, { width: 480 })} alt={`Customer photo ${i + 1}`} className="h-full w-full object-cover" />
                   </a>
                 </li>
               ))}
@@ -93,7 +93,7 @@ export default function AdminInvestigationDetail() {
               <div className="mt-5 border-t border-ivory-200 pt-5">
                 <p className="mb-2 text-xs uppercase tracking-wider text-muted">Certificate</p>
                 <a href={inv.certificate.url} target="_blank" rel="noreferrer" className="block max-w-sm border border-ivory-200 bg-ivory-50" title="Open full size">
-                  <img src={imageUrl(inv.certificate.url, { width: 720 })} alt="Certificate supplied by the customer" className="max-h-80 w-full object-contain" />
+                  <img loading="lazy" decoding="async" src={imageUrl(inv.certificate.url, { width: 720 })} alt="Certificate supplied by the customer" className="max-h-80 w-full object-contain" />
                 </a>
               </div>
             )}
@@ -257,7 +257,7 @@ function ResultCard({ inv, run }) {
               {isPdf(report) ? (
                 <span className="flex h-12 w-10 items-center justify-center border border-ivory-200 bg-white text-[10px] font-semibold text-red-800">PDF</span>
               ) : (
-                <img src={imageUrl(report.url, { width: 120 })} alt="Report preview" className="h-12 w-12 border border-ivory-200 object-cover" />
+                <img loading="lazy" decoding="async" src={imageUrl(report.url, { width: 120 })} alt="Report preview" className="h-12 w-12 border border-ivory-200 object-cover" />
               )}
               <a href={report.url} target="_blank" rel="noreferrer" className="text-emerald-900 underline underline-offset-4">Open report</a>
               <span className="flex-1" />

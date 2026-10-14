@@ -64,7 +64,7 @@ export default function PhotoPicker({ photos, onChange, max, label, hint, error,
       <ul className="grid grid-cols-3 gap-3 sm:grid-cols-5">
         {photos.map((p, i) => (
           <li key={p.publicId} className={`${tile} border-ivory-200`}>
-            <img src={imageUrl(p.url, { width: 240 })} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={imageUrl(p.url, { width: 240 })} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" />
             <button type="button" onClick={() => remove(p.publicId)} className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-ink shadow hover:text-red-700" aria-label={`Remove photo ${i + 1}`}>
               <CloseIcon className="h-4 w-4" />
             </button>
@@ -72,7 +72,7 @@ export default function PhotoPicker({ photos, onChange, max, label, hint, error,
         ))}
         {pending.map((job) => (
           <li key={job.id} className={`${tile} ${job.error ? 'border-red-300' : 'border-ivory-200'}`}>
-            <img src={job.preview} alt="" className={`h-full w-full object-cover ${job.error ? 'opacity-30' : 'opacity-60'}`} />
+            <img loading="lazy" decoding="async" src={job.preview} alt="" className={`h-full w-full object-cover ${job.error ? 'opacity-30' : 'opacity-60'}`} />
             {job.error ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 p-2 text-center">
                 <p role="alert" className="text-[11px] leading-tight text-red-800">{job.error}</p>

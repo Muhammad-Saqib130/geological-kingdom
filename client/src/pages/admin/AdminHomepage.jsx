@@ -94,7 +94,7 @@ export default function AdminHomepage() {
               <p className="-mt-2 mb-4 text-sm text-muted">{where}</p>
               <div className={`relative ${ratio} overflow-hidden border border-ivory-200 ${img ? 'bg-ivory-50' : 'bg-sparkle'}`}>
                 {img ? (
-                  <img src={imageUrl(img.url, { width: 800 })} alt={img.alt || ''} className="h-full w-full object-cover" />
+                  <img loading="lazy" decoding="async" src={imageUrl(img.url, { width: 800 })} alt={img.alt || ''} className="h-full w-full object-cover" />
                 ) : (
                   <p className="absolute inset-0 flex items-center justify-center px-4 text-center text-xs uppercase tracking-[0.18em] text-ivory-200/80">Using illustrated artwork</p>
                 )}

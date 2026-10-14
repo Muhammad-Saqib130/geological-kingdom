@@ -147,7 +147,7 @@ export default function Lightbox({ images, index, onIndex, onClose, title, color
           style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
         >
           {image ? (
-            <img src={imageUrl(image.url, { width: 2000 })} alt={image.alt || title} draggable={false} className="max-h-full max-w-full object-contain" />
+            <img loading="lazy" decoding="async" src={imageUrl(image.url, { width: 2000 })} alt={image.alt || title} draggable={false} className="max-h-full max-w-full object-contain" />
           ) : (
             <GemVisual color={colorHex} bare className="h-full max-h-[70vh] w-full max-w-[70vh]" />
           )}
@@ -166,7 +166,7 @@ export default function Lightbox({ images, index, onIndex, onClose, title, color
           {images.map((img, i) => (
             <li key={img.publicId ?? img.url}>
               <button type="button" onClick={() => onIndex(i)} aria-label={`Show image ${i + 1}`} aria-current={i === index} className={`block h-14 w-14 overflow-hidden border-2 ${i === index ? 'border-gold-500' : 'border-transparent opacity-60 hover:opacity-100'}`}>
-                <img src={imageUrl(img.url, { width: 120 })} alt="" className="h-full w-full object-cover" />
+                <img loading="lazy" decoding="async" src={imageUrl(img.url, { width: 120 })} alt="" className="h-full w-full object-cover" />
               </button>
             </li>
           ))}

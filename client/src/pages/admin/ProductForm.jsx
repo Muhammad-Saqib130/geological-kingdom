@@ -308,7 +308,7 @@ export default function ProductForm() {
                 <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-muted">Certificate scan</p>
                 {form.certificate.image ? (
                   <div className="border border-ivory-200">
-                    <img src={imageUrl(form.certificate.image.url, { width: 600 })} alt="Certificate scan" className="max-h-56 w-full bg-ivory-50 object-contain" />
+                    <img loading="lazy" decoding="async" src={imageUrl(form.certificate.image.url, { width: 600 })} alt="Certificate scan" className="max-h-56 w-full bg-ivory-50 object-contain" />
                     <div className="flex justify-between p-2 text-xs">
                       <label className="cursor-pointer text-emerald-900 hover:underline">
                         Replace

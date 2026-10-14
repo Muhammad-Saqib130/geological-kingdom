@@ -71,7 +71,7 @@ export default function ImageManager({ images, onChange, max, folder = 'products
         {images.map((img, i) => (
           <li key={img.publicId} className="border border-ivory-200 bg-ivory-50">
             <div className="relative aspect-square overflow-hidden bg-white">
-              <img src={imageUrl(img.url, { width: 360 })} alt={img.alt || ''} className="h-full w-full object-cover" />
+              <img loading="lazy" decoding="async" src={imageUrl(img.url, { width: 360 })} alt={img.alt || ''} className="h-full w-full object-cover" />
               {i === 0 && <span className="absolute left-2 top-2 bg-emerald-900 px-2 py-0.5 text-[10px] uppercase tracking-widest text-ivory-50">Cover</span>}
             </div>
             <div className="space-y-2 p-2">
@@ -104,7 +104,7 @@ export default function ImageManager({ images, onChange, max, folder = 'products
           <li key={p.id} className={`border ${p.error ? 'border-red-300 bg-red-50' : 'border-ivory-200 bg-ivory-50'}`}>
             <div className="relative aspect-square overflow-hidden bg-white">
               {p.preview ? (
-                <img src={p.preview} alt="" className={`h-full w-full object-cover ${p.error ? 'opacity-40' : 'opacity-60'}`} />
+                <img loading="lazy" decoding="async" src={p.preview} alt="" className={`h-full w-full object-cover ${p.error ? 'opacity-40' : 'opacity-60'}`} />
               ) : (
                 <div className="flex h-full items-center justify-center text-xs uppercase tracking-widest text-muted" aria-hidden="true">Not an image</div>
               )}

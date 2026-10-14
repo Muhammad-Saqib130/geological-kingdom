@@ -158,7 +158,7 @@ function PaymentCard({ order, run }) {
           {[...p.proofs].reverse().map((proof) => (
             <li key={proof._id ?? proof.id} className="flex flex-col gap-4 border border-ivory-200 p-3 sm:flex-row">
               <a href={proof.image.url} target="_blank" rel="noreferrer" className="block w-full shrink-0 bg-ivory-50 sm:w-48" title="Open full size">
-                <img src={imageUrl(proof.image.url, { width: 600 })} alt="Payment screenshot" className="max-h-64 w-full object-contain" />
+                <img loading="lazy" decoding="async" src={imageUrl(proof.image.url, { width: 600 })} alt="Payment screenshot" className="max-h-64 w-full object-contain" />
               </a>
               <div className="min-w-0 flex-1 text-sm">
                 <p><StatusBadge kind="payment" status={proof.status === 'pending' ? 'awaiting_review' : proof.status === 'approved' ? 'paid' : 'rejected'} /></p>

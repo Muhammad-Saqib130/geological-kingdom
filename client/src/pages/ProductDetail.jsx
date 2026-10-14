@@ -44,7 +44,7 @@ function ProductView({ product, related }) {
     ['Reference', product.sku],
   ].filter(([, v]) => v)
 
-  const url = typeof window !== 'undefined' ? window.location.href : ''
+  const url = typeof window !== 'undefined' ? window.location.origin + window.location.pathname : ''
   const whatsappApi = useWhatsapp()
   const inquiry = whatsappApi.link(
     `Hello Geological Kingdom, I'm interested in the ${product.name} (${product.carat} ct${product.sku ? `, ref ${product.sku}` : ''}).\n${url}`,
@@ -57,9 +57,21 @@ function ProductView({ product, related }) {
     name: product.name,
     description: product.description,
     sku: product.sku,
-    image: product.images.map((i) => i.url),
+    url,
+    image: product.images.map((i) => new URL(i.url, window.location.origin).href),
+    brand: { '@type': 'Brand', name: 'Geological Kingdom' },
     category: product.category?.name,
-    offers: { '@type': 'Offer', priceCurrency: 'PKR', price: product.pricePKR, availability: `https://schema.org/${soldOut ? 'SoldOut' : 'InStock'}`, url },
+    color: product.color,
+    weight: { '@type': 'QuantitativeValue', value: product.carat, unitText: 'ct' },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'PKR',
+      price: product.pricePKR,
+      availability: `https://schema.org/${soldOut ? 'SoldOut' : 'InStock'}`,
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: { '@type': 'Organization', name: 'Geological Kingdom' },
+      url,
+    },
   }
 
   return (
