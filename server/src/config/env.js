@@ -36,6 +36,8 @@ const schema = z.object({
   // Stripe (card payments). Card checkout is offered only when the secret key is set.
   STRIPE_SECRET_KEY: z.string().trim().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().trim().optional(),
+  // Optional API host override, e.g. http://localhost:12111 for stripe-mock in development
+  STRIPE_API_BASE: z.string().url().optional(),
   // Email. Without SMTP_HOST, emails are written as .eml files to MAIL_OUTBOX_DIR (development).
   SMTP_HOST: z.string().trim().optional(),
   SMTP_PORT: z.coerce.number().int().positive().default(587),

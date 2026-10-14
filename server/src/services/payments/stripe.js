@@ -5,7 +5,13 @@ const SESSION_MINUTES = 30; // Stripe's minimum Checkout Session lifetime
 
 let client = null;
 export function stripeClient() {
-  if (!client && env.STRIPE_SECRET_KEY) client = new Stripe(env.STRIPE_SECRET_KEY);
+  if (!client && env.STRIPE_SECRET_KEY) {
+    const base = env.STRIPE_API_BASE && new URL(env.STRIPE_API_BASE);
+    client = new Stripe(
+      env.STRIPE_SECRET_KEY,
+      base ? { host: base.hostname, port: Number(base.port) || undefined, protocol: base.protocol.replace(':', '') } : undefined,
+    );
+  }
   return client;
 }
 // Tests replace the network client with a stub.

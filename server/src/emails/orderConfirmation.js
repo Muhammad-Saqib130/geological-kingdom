@@ -31,7 +31,7 @@ export function orderConfirmationEmail(order, { orderUrl, paymentAccounts }) {
   let paymentText;
   if (method === 'cod') paymentText = `Please keep ${pkr(order.totalPKR)} ready in cash when your parcel arrives.`;
   else if (method === 'card') paymentText = `Your card payment has been received. Thank you.`;
-  else paymentText = `Please send ${pkr(order.totalPKR)} by ${METHOD_LABELS[method]} using your order number ${order.orderNumber} as the reference, then upload a screenshot of the payment on your order page. Your stones are reserved for 48 hours.`;
+  else paymentText = `Please send ${pkr(order.totalPKR)} by ${method === 'bank' ? 'bank transfer' : METHOD_LABELS[method]} using your order number ${order.orderNumber} as the reference, then upload a screenshot of the payment on your order page. Your stones are reserved for 48 hours.`;
 
   const accounts = manual ? accountLines(method, paymentAccounts) : [];
 
