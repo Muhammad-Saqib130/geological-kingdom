@@ -41,8 +41,11 @@ function send(url, body, { onProgress, withCredentials, headers = {} }) {
 
 // Uploads one image and returns { url, publicId, width, height }.
 // Validates type and size against what the server allows before sending anything.
-export async function uploadImage(file, folder, { onProgress } = {}) {
-  const ticket = await api('/admin/uploads/sign', { method: 'POST', json: { folder } })
+// `signPath` lets non-admin flows (payment proofs) use their own signing endpoint.
+export async function uploadImage(file, folder, { onProgress, signPath } = {}) {
+  const ticket = signPath
+    ? await api(signPath, { method: 'POST' })
+    : await api('/admin/uploads/sign', { method: 'POST', json: { folder } })
 
   if (!ticket.accept.includes(extensionOf(file))) {
     throw new ApiError(415, `${file.name}: use ${ticket.accept.map((a) => a.toUpperCase()).join(', ')}`)

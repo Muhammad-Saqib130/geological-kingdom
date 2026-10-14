@@ -37,7 +37,7 @@ export default function AnnouncementBar() {
           {m.to ? <Link to={m.to} className="underline-offset-4 hover:text-gold-300 hover:underline">{m.text}</Link> : m.text}
         </p>
         <div className="hidden items-center justify-end gap-5 lg:flex">
-          <Link to={user ? (user.role === 'admin' ? '/admin/products' : '/') : '/login'} className="text-xs text-ivory-200/80 hover:text-gold-300">
+          <Link to={user ? (user.role === 'admin' ? '/admin/products' : '/account/orders') : '/login'} className="text-xs text-ivory-200/80 hover:text-gold-300">
             {user ? `Hello, ${user.name.split(' ')[0]}` : 'Sign in'}
           </Link>
           <CurrencyToggle dark />

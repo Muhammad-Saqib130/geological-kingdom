@@ -104,16 +104,16 @@ export default function Cart() {
           </dl>
           {currency === 'USD' && <p className="mt-2 text-xs text-muted">USD shown at today's rate. Orders are priced in PKR.</p>}
 
-          <button type="button" disabled className="btn-primary mt-6 w-full" title="Online checkout is coming soon">
-            Secure checkout · coming soon
-          </button>
+          <Link to="/checkout" className={`btn-primary mt-6 w-full ${available.length ? '' : 'pointer-events-none opacity-50'}`} aria-disabled={!available.length}>
+            Proceed to checkout
+          </Link>
           {whatsappOrder && available.length > 0 && (
             <a href={whatsappOrder} target="_blank" rel="noopener noreferrer" className="btn mt-3 w-full border border-[#1f8f4e] text-[#17703d] hover:bg-[#1f8f4e] hover:text-white">
               <WhatsAppIcon className="h-5 w-5" /> Order on WhatsApp
             </a>
           )}
           <p className="mt-4 text-xs leading-relaxed text-muted">
-            Until online checkout opens, send us your order on WhatsApp and we will confirm availability, shipping and payment (bank transfer, JazzCash, Easypaisa or cash on delivery in Pakistan).
+            Pay by card, bank transfer, JazzCash, Easypaisa, or cash on delivery in Pakistan. Prefer to talk first? Send your order on WhatsApp.
           </p>
           <Link to="/shop" className="mt-6 block text-center text-xs uppercase tracking-[0.15em] text-emerald-900 underline-offset-4 hover:underline">Continue shopping</Link>
         </aside>

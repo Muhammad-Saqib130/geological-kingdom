@@ -20,7 +20,7 @@ export default function Login() {
     setError(null)
     try {
       const user = await login(form.email, form.password)
-      navigate(safeNext(params.get('next')) ?? (user.role === 'admin' ? '/admin/products' : '/'), { replace: true })
+      navigate(safeNext(params.get('next')) ?? (user.role === 'admin' ? '/admin/products' : '/account/orders'), { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -42,7 +42,7 @@ export default function Login() {
         </button>
       </form>
       <p className="mt-6 text-center text-sm text-muted">
-        <Link to="/" className="underline-offset-4 hover:underline">Back to the store</Link>
+        New here? <Link to={`/register${params.get('next') ? `?next=${encodeURIComponent(params.get('next'))}` : ''}`} className="text-emerald-900 underline underline-offset-4">Create an account</Link>
       </p>
     </section>
   )

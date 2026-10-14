@@ -64,6 +64,7 @@ export default function Footer() {
         <nav aria-label="Your account">
           <h2 className={heading}>Customer</h2>
           <ul className="space-y-2.5">
+            <li><Link to="/account/orders" className={link}>My orders</Link></li>
             <li><Link to="/login" className={link}>Sign in</Link></li>
             <li><Link to="/cart" className={link}>Your cart</Link></li>
             <li><Link to="/about" className={link}>Our story</Link></li>

@@ -49,6 +49,16 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Modals (drawers, lightbox) use `hooks/useDialog.js`; anything inside a sticky/transformed parent must be portalled to `document.body`
 - `<title>`/`<meta>` are rendered in page components (React 19 hoists them); keep none in index.html
 
+## Orders & payments
+- Totals are always recomputed on the server (`services/pricing.js`); `expectedTotalPKR` from the client only guards against silent price changes (409)
+- Stock is reserved at order time with atomic conditional `$inc` per stone and rolled back on partial failure (`services/stock.js`); cancellation releases it once (`stockReleased` flag). Needs real MongoDB: FerretDB is not atomic
+- Holds: card 35 min, manual transfer 48 h without proof (none while under review), COD until shipped/cancelled; `jobs/expireOrders.js` cancels overdue orders every 5 min
+- Statuses: pending → paid/shipped(COD only)/cancelled; paid → shipped/cancelled; shipped → delivered (COD delivered = paid). Rules in `models/Order.js` TRANSITIONS
+- Guest order links use an HMAC token (`services/orderAccess.js`), not stored; owners and admins need no token; everyone else gets 404
+- Stripe Checkout charges USD at the order's rate; webhook at `/api/webhooks/stripe` (raw body, registered before `express.json`); the order page also verifies `session_id` on return. `STRIPE_API_BASE` can point at stripe-mock locally
+- Email: order confirmation only (`emails/orderConfirmation.js`), sent on placement (COD/manual) or on payment (card). Without SMTP it is saved to `server/mail-outbox/`
+- Shipping rates, exchange rate and payment account details live in Settings (Admin > Settings)
+
 ## Images
 - `server/src/services/storage`: Cloudinary when `CLOUDINARY_*` are set (signed direct uploads), otherwise local files in `server/uploads` (dev only; production requires Cloudinary)
 - Only assets uploaded through `/api/admin/uploads` can be attached to products; removed images are deleted after save

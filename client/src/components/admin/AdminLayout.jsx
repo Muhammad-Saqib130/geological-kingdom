@@ -4,8 +4,10 @@ import { useAuth } from '../../store/authStore.js'
 import Logo from '../Logo.jsx'
 
 const nav = [
+  { to: '/admin/orders', label: 'Orders' },
   { to: '/admin/products', label: 'Products' },
   { to: '/admin/homepage', label: 'Homepage' },
+  { to: '/admin/settings', label: 'Settings' },
 ]
 
 export default function AdminLayout() {

@@ -90,7 +90,7 @@ export default function Header() {
               <SearchIcon className="h-5 w-5" />
             </button>
             <Link
-              to={user ? (user.role === 'admin' ? '/admin/products' : '/') : '/login'}
+              to={user ? (user.role === 'admin' ? '/admin/products' : '/account/orders') : '/login'}
               className={`${iconButton} hidden sm:inline-flex`}
               aria-label={user ? `Signed in as ${user.name}` : 'Sign in'}
               title={user ? user.name : 'Sign in'}
@@ -232,7 +232,7 @@ function MobileMenu({ open, onClose, user, categories }) {
         </nav>
         <div className="flex items-center justify-between border-t border-ivory-200 px-6 py-4">
           <CurrencyToggle />
-          <Link to={user ? (user.role === 'admin' ? '/admin/products' : '/') : '/login'} className="text-sm text-emerald-900 underline-offset-4 hover:underline">
+          <Link to={user ? (user.role === 'admin' ? '/admin/products' : '/account/orders') : '/login'} className="text-sm text-emerald-900 underline-offset-4 hover:underline">
             {user ? user.name : 'Sign in'}
           </Link>
         </div>
