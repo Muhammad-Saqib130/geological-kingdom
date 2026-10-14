@@ -17,6 +17,7 @@ import { useCurrency } from './store/currencyStore.js'
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout.jsx'))
 const AdminProducts = lazy(() => import('./pages/admin/AdminProducts.jsx'))
 const ProductForm = lazy(() => import('./pages/admin/ProductForm.jsx'))
+const AdminHomepage = lazy(() => import('./pages/admin/AdminHomepage.jsx'))
 
 const Loading = () => <p className="p-10 text-center text-sm text-muted" role="status">Loading…</p>
 
@@ -52,6 +53,7 @@ export default function App() {
             <Route path="products" element={<AdminProducts />} />
             <Route path="products/new" element={<ProductForm />} />
             <Route path="products/:id" element={<ProductForm />} />
+            <Route path="homepage" element={<AdminHomepage />} />
           </Route>
         </Routes>
       </Suspense>

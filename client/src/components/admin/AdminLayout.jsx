@@ -3,7 +3,10 @@ import { Link, NavLink, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../store/authStore.js'
 import Logo from '../Logo.jsx'
 
-const nav = [{ to: '/admin/products', label: 'Products' }]
+const nav = [
+  { to: '/admin/products', label: 'Products' },
+  { to: '/admin/homepage', label: 'Homepage' },
+]
 
 export default function AdminLayout() {
   const { user, status, load, logout } = useAuth()

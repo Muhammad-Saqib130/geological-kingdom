@@ -19,7 +19,7 @@
 - Small commits per feature; ask before adding new dependencies
 
 ## Design direction
-- Luxury, elegant, minimal. Reference: docs/design/reference-jewellery.png
+- Luxury, elegant, minimal. Reference: docs/design/reference-jewellery.png (structure followed: top bar, centred-logo header + menu row, dark hero, icon tabs + 2x2 cards, dark promo banner, tall-card grid (by origin), grey trust band, featured cards with overlapping pill, split testimonial, newsletter band, light footer)
 - Take inspiration only (layout rhythm, section ideas). Do NOT copy it. Use our own brand name, palette, copy and imagery.
 - Palette: deep emerald green + warm gold accent + off-white. Serif headings (Cormorant Garamond), clean sans body (Inter)
 - Mobile-first, accessible, fast
@@ -44,6 +44,8 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Pages: `/` home sections, `/shop` (filters in the URL; multi-value filters are repeated params because origins contain commas), `/gems/:slug`, `/cart`, `/info/:slug`, `/login`; admin under `/admin` (lazy-loaded bundle)
 - Cart: Zustand `gk-cart` in localStorage; `POST /api/cart/quote` re-prices from the DB on the cart page; checkout not built yet (WhatsApp order link meanwhile)
 - Session check uses `GET /api/auth/session` (200 `{user:null}` for guests); `/api/auth/me` stays 401 for guests
+- Home page photos (hero, "Verified" banner, testimonial) are uploaded in Admin > Homepage (`/api/admin/settings/homepage`); empty slots show illustrated fallbacks
+- Storefront buttons are pills via `--btn-radius`; the admin layout sets it to 0 (square). Section titles use the `section-title` / `section-subtitle` utilities
 - Modals (drawers, lightbox) use `hooks/useDialog.js`; anything inside a sticky/transformed parent must be portalled to `document.body`
 - `<title>`/`<meta>` are rendered in page components (React 19 hoists them); keep none in index.html
 
