@@ -58,7 +58,7 @@ export const listQuery = z.object({
   featured: z.enum(['true', 'false']).optional(),
   stock: z.enum(['in', 'out']).optional(),
   sort: z.enum(Object.keys(SORTS)).default('updated'),
-  page: z.coerce.number().int().min(1).default(1),
+  page: z.coerce.number().int().min(1).max(1000).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 

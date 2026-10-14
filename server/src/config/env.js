@@ -47,6 +47,13 @@ const schema = z.object({
   SMTP_PASS: z.string().optional(),
   MAIL_FROM: z.string().default('Geological Kingdom <orders@geologicalkingdom.example>'),
   MAIL_OUTBOX_DIR: z.string().optional(),
+  // Every API request per IP per minute (a ceiling against floods; specific limits are lower)
+  API_RATE_LIMIT: z.coerce.number().int().min(1).default(300),
+  // Failed sign-ins per account per hour, from any IP (stops spreading a password guess across IPs)
+  ACCOUNT_LOGIN_LIMIT: z.coerce.number().int().min(1).default(20),
+  // Proxies in front of the server whose X-Forwarded-For can be trusted: 1 on Render/Railway,
+  // 2 when the site is on Vercel and forwards /api to the server. Default: 1 in production, 0 otherwise.
+  TRUST_PROXY: z.coerce.number().int().min(0).max(5).optional(),
   // New orders per IP per hour
   ORDER_RATE_LIMIT: z.coerce.number().int().min(1).default(20),
   // Gem Investigation requests per IP per hour (uploads allow ten times this)

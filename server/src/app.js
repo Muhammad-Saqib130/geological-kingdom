@@ -8,7 +8,10 @@ import { env } from './config/env.js';
 import { stripeWebhook } from './controllers/webhookController.js';
 import { authenticate } from './middleware/auth.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
+import { apiLimiter } from './middleware/rateLimit.js';
+import { checkOrigin, noStoreByDefault } from './middleware/security.js';
 import apiRoutes from './routes/index.js';
+import { indexTemplate, pageMeta, renderPage, robotsTxt, sitemapXml } from './services/seo.js';
 import { storage } from './services/storage/index.js';
 import { UPLOAD_DIR } from './services/storage/local.js';
 
@@ -20,8 +23,10 @@ export function createApp() {
   const app = express();
 
   app.disable('x-powered-by');
-  // Trust the first proxy (Render/Railway/Nginx) so req.ip and secure cookies work in production
-  if (env.isProd) app.set('trust proxy', 1);
+  // Trust the proxies in front of us (Render/Railway's load balancer, plus Vercel when it forwards
+  // /api) so req.ip is the visitor's address: rate limits are per visitor, not per proxy.
+  const proxies = env.TRUST_PROXY ?? (env.isProd ? 1 : 0);
+  if (proxies) app.set('trust proxy', proxies);
   app.use(helmet({
     contentSecurityPolicy: {
       directives: {
@@ -41,7 +46,7 @@ export function createApp() {
   app.use(cookieParser());
   app.use(authenticate);
 
-  app.use('/api', apiRoutes);
+  app.use('/api', noStoreByDefault, apiLimiter, checkOrigin, apiRoutes);
 
   // Local image storage (development, or a production preview with ALLOW_LOCAL_UPLOADS)
   if (storage.name === 'local') {
@@ -55,11 +60,28 @@ export function createApp() {
     // Hashed asset files never change; index.html must be re-checked so new deploys show up
     app.use('/assets', express.static(`${CLIENT_DIST}/assets`, { maxAge: '1y', immutable: true }));
     app.use(express.static(CLIENT_DIST, { index: false, maxAge: '1h' }));
-    // Client-side routes (/shop, /gems/ruby, …) all load the single-page app
-    app.get(/^\/(?!api\/|api$|uploads\/|assets\/).*/, (req, res) => {
-      res.set('Cache-Control', 'no-cache').sendFile(`${CLIENT_DIST}/index.html`);
-    });
   }
+
+  app.get('/sitemap.xml', async (_req, res) => {
+    res.type('application/xml').set('Cache-Control', 'public, max-age=3600').send(await sitemapXml());
+  });
+  app.get('/robots.txt', (_req, res) => {
+    res.type('text/plain').set('Cache-Control', 'public, max-age=3600').send(robotsTxt());
+  });
+
+  // Storefront pages (/shop, /gems/ruby, …): the single-page app's HTML with the page's title,
+  // description, Open Graph tags and structured data filled in. When the site is hosted on Vercel,
+  // only crawlers and link-preview bots are sent here (see client/vercel.json).
+  app.get(/^\/(?!api\/|api$|uploads\/|assets\/).*/, async (req, res) => {
+    const template = await indexTemplate();
+    let meta;
+    try {
+      meta = await pageMeta(req.path, req.query);
+    } catch (err) {
+      console.error(`SEO metadata for ${req.path} failed: ${err.message}`);
+    }
+    res.status(meta?.status ?? 200).set('Cache-Control', 'no-cache').type('html').send(meta ? renderPage(template, meta) : template);
+  });
 
   app.use(notFound);
   app.use(errorHandler);

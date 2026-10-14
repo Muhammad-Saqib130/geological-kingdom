@@ -10,7 +10,7 @@ export const orderParams = z.object({ number: z.string().regex(/^GK-\d{4}-\d{6}$
 export const listQuery = z.object({
   status: z.enum([...ORDER_STATUSES, 'review', 'refund']).optional(), // review = proofs awaiting approval
   q: z.string().trim().max(80).optional(),
-  page: z.coerce.number().int().min(1).default(1),
+  page: z.coerce.number().int().min(1).max(1000).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(25),
 });
 

@@ -40,7 +40,7 @@ export const listProductsQuery = z.object({
   featured: z.enum(['true', 'false']).optional(),
   inStock: z.enum(['true', 'false']).optional(),
   sort: z.enum(Object.keys(SORTS)).default('newest'),
-  page: z.coerce.number().int().min(1).default(1),
+  page: z.coerce.number().int().min(1).max(1000).default(1),
   limit: z.coerce.number().int().min(1).max(48).default(12),
 });
 
