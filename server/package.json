@@ -8,7 +8,8 @@
     "predev": "node src/scripts/checkEnv.js",
     "dev": "node --watch-path=src --watch-path=.env src/index.js",
     "start": "node src/index.js",
-    "seed": "node src/scripts/seed.js"
+    "seed": "node src/scripts/seed.js",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\""
   },
   "engines": {
     "node": ">=22"
