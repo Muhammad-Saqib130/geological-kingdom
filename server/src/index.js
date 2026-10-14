@@ -2,6 +2,7 @@ import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { createApp } from './app.js';
 import { startOrderExpiryJob } from './jobs/expireOrders.js';
+import { seedOnStart } from './services/seeding.js';
 
 try {
   await connectDB();
@@ -11,10 +12,21 @@ try {
   process.exit(1);
 }
 
+try {
+  await seedOnStart();
+} catch (err) {
+  // The shop still runs; the log says what to fix (usually ADMIN_PASSWORD)
+  console.error(`Startup seed failed: ${err.message}`);
+}
+
 startOrderExpiryJob();
 
 const server = createApp().listen(env.PORT, () => {
   console.log(`API listening on http://localhost:${env.PORT} (${env.NODE_ENV})`);
+  if (env.serveClient) console.log(`Storefront served from client/dist at ${env.clientUrl}`);
+  if (env.isProd && !env.cloudinaryEnabled) {
+    console.warn('ALLOW_LOCAL_UPLOADS is on: uploaded images are lost on restart. Add Cloudinary before taking real orders.');
+  }
 });
 
 server.on('error', (err) => {

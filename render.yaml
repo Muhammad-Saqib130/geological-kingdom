@@ -1,0 +1,37 @@
+# Render Blueprint: one web service that serves both the storefront and the API.
+# Deploy: Render dashboard > New > Blueprint > pick this repo. See DEPLOY.md.
+services:
+  - type: web
+    name: geological-kingdom
+    runtime: node
+    plan: free
+    region: singapore # closest Render region to Pakistan
+    branch: main
+    # Dev dependencies are skipped for the server (its test database download is not needed)
+    # but kept for the client, which needs Vite to build.
+    buildCommand: npm ci --prefix server --omit=dev && npm ci --prefix client --include=dev && npm run build --prefix client
+    startCommand: npm start --prefix server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # MongoDB Atlas connection string (Atlas > Connect > Drivers)
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      # First admin account, created on first start. Password: at least 12 characters.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Fill the empty database with the sample gemstones on first start
+      - key: SEED_ON_START
+        value: "true"
+      # Preview only: uploaded photos are lost when the free server restarts.
+      # Add the three CLOUDINARY_* variables and remove this before taking real orders.
+      - key: ALLOW_LOCAL_UPLOADS
+        value: "true"
+      # Shown as WhatsApp contact links on the site (international format, no +)
+      - key: VITE_WHATSAPP_NUMBER
+        value: "923000000000"

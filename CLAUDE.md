@@ -60,9 +60,15 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Shipping rates, exchange rate and payment account details live in Settings (Admin > Settings)
 
 ## Images
-- `server/src/services/storage`: Cloudinary when `CLOUDINARY_*` are set (signed direct uploads), otherwise local files in `server/uploads` (dev only; production requires Cloudinary)
+- `server/src/services/storage`: Cloudinary when `CLOUDINARY_*` are set (signed direct uploads), otherwise local files in `server/uploads` (dev only; production requires Cloudinary unless `ALLOW_LOCAL_UPLOADS=true` for a throwaway preview)
 - Only assets uploaded through `/api/admin/uploads` can be attached to products; removed images are deleted after save
 - Client: `lib/images.js` adds Cloudinary `f_auto,q_auto,w_*` transforms
+
+## Deployment
+- Render Blueprint in `render.yaml`, step-by-step guide in `DEPLOY.md` (Render + MongoDB Atlas)
+- One web service: in production Express serves `client/dist` with an SPA fallback (`SERVE_CLIENT`), so site and API share one origin
+- `CLIENT_ORIGIN` defaults to `RENDER_EXTERNAL_URL`; `SEED_ON_START=true` seeds an empty DB and creates the admin (`services/seeding.js`, shared with `npm run seed`)
+- CSP (helmet in `app.js`) allows Google Fonts, `res.cloudinary.com` images, `api.cloudinary.com` uploads and `blob:` previews; update it when adding external hosts
 
 ## Layout
 - root: `scripts/dev.js` runs both apps (no extra dependency)
