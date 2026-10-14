@@ -49,6 +49,8 @@ const schema = z.object({
   MAIL_OUTBOX_DIR: z.string().optional(),
   // New orders per IP per hour
   ORDER_RATE_LIMIT: z.coerce.number().int().min(1).default(20),
+  // Gem Investigation requests per IP per hour (uploads allow ten times this)
+  INVESTIGATION_RATE_LIMIT: z.coerce.number().int().min(1).default(10),
   // Seed-only: initial admin account (see `npm run seed`)
   ADMIN_EMAIL: z.string().optional(),
   ADMIN_PASSWORD: z.string().optional(),

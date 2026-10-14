@@ -42,6 +42,7 @@ export async function startTestServer() {
     STRIPE_SECRET_KEY: 'sk_test_dummy',
     STRIPE_WEBHOOK_SECRET,
     ORDER_RATE_LIMIT: '10000',
+    INVESTIGATION_RATE_LIMIT: '10000',
     NODE_ENV: 'test',
     MONGODB_URI: uri,
     JWT_SECRET: TEST_JWT_SECRET,

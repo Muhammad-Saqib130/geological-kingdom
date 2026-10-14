@@ -10,16 +10,16 @@ export const UPLOAD_DIR = env.LOCAL_UPLOAD_DIR
   ? path.resolve(env.LOCAL_UPLOAD_DIR)
   : fileURLToPath(new URL('../../../uploads', import.meta.url));
 const ACCEPT = ['jpg', 'png', 'webp', 'gif', 'avif'];
-const ID_PATTERN = /^local\/(products|certificates|banners|payment-proofs)\/[a-f0-9]{32}\.(jpg|png|webp|gif|avif)$/;
+const ID_PATTERN = /^local\/(products|certificates|banners|payment-proofs|investigations|investigation-reports)\/[a-f0-9]{32}\.(jpg|png|webp|gif|avif|pdf)$/;
 
-export function signUpload(folder, { maxBytes }) {
+export function signUpload(folder, { maxBytes, documents = false }) {
   return {
     provider: name,
     // Same-origin endpoint guarded by the admin session cookie; no signature needed.
     uploadUrl: `/api/admin/uploads/local?folder=${folder}`,
     fields: {},
     maxBytes,
-    accept: ACCEPT,
+    accept: documents ? [...ACCEPT, 'pdf'] : ACCEPT,
   };
 }
 
@@ -34,8 +34,8 @@ export function sniffImage(buf) {
   return null;
 }
 
-export async function save(folder, buf) {
-  const ext = sniffImage(buf);
+export async function save(folder, buf, { documents = false } = {}) {
+  const ext = sniffImage(buf) ?? (documents && buf.toString('ascii', 0, 5) === '%PDF-' ? 'pdf' : null);
   if (!ext) return null;
   const file = `${randomBytes(16).toString('hex')}.${ext}`;
   await mkdir(path.join(UPLOAD_DIR, folder), { recursive: true });

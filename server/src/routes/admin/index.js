@@ -25,6 +25,18 @@ import {
   updateStatus,
   updateStoreSettings,
 } from '../../controllers/admin/orderAdminController.js';
+import {
+  createNote,
+  getInvestigation,
+  idParams as investigationParams,
+  listInvestigations,
+  listQuery as investigationListQuery,
+  noteBody,
+  resultBody,
+  statusBody as investigationStatusBody,
+  updateResult,
+  updateStatus as updateInvestigationStatus,
+} from '../../controllers/admin/investigationAdminController.js';
 import { getHomepage, homepageBody, updateHomepage } from '../../controllers/admin/settingsAdminController.js';
 import { localQuery, signBody, signUpload, uploadLocal } from '../../controllers/admin/uploadController.js';
 import { requireAdmin } from '../../middleware/auth.js';
@@ -59,6 +71,13 @@ router.get('/orders/:number', withOrder, getOrder);
 router.patch('/orders/:number/status', withOrder, validate(statusBody), updateStatus);
 router.post('/orders/:number/payment/approve', withOrder, approveProof);
 router.post('/orders/:number/payment/reject', withOrder, validate(rejectBody), rejectProof);
+
+const withInvestigation = validate(investigationParams, 'params');
+router.get('/investigations', validate(investigationListQuery, 'query'), listInvestigations);
+router.get('/investigations/:trackingId', withInvestigation, getInvestigation);
+router.patch('/investigations/:trackingId/status', withInvestigation, validate(investigationStatusBody), updateInvestigationStatus);
+router.post('/investigations/:trackingId/notes', withInvestigation, validate(noteBody), createNote);
+router.put('/investigations/:trackingId/result', withInvestigation, validate(resultBody), updateResult);
 
 router.post('/uploads/sign', validate(signBody), signUpload);
 router.post(

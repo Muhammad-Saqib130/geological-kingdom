@@ -3,6 +3,7 @@ import { dbState, pingDB } from '../config/db.js';
 import adminRoutes from './admin/index.js';
 import authRoutes from './authRoutes.js';
 import categoryRoutes from './categoryRoutes.js';
+import investigationRoutes from './investigationRoutes.js';
 import productRoutes from './productRoutes.js';
 import orderRoutes from './orderRoutes.js';
 import settingsRoutes from './settingsRoutes.js';
@@ -22,6 +23,7 @@ router.get('/health', async (_req, res) => {
 router.use('/admin', adminRoutes);
 router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
+router.use('/investigations', investigationRoutes);
 router.use('/products', productRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/', storefrontRoutes);

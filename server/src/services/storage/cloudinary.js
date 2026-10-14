@@ -15,9 +15,11 @@ export function sign(params) {
   return createHash('sha1').update(toSign + env.CLOUDINARY_API_SECRET).digest('hex');
 }
 
-export function signUpload(folder, { maxBytes }) {
+export function signUpload(folder, { maxBytes, documents = false }) {
+  // PDFs are stored as image assets too, so they share the delivery URL and delete call
+  const accept = documents ? [...ACCEPT, 'pdf'] : ACCEPT;
   const params = {
-    allowed_formats: ACCEPT.join(','),
+    allowed_formats: accept.join(','),
     folder: `${env.CLOUDINARY_FOLDER}/${folder}`,
     timestamp: Math.floor(Date.now() / 1000),
   };
@@ -26,7 +28,7 @@ export function signUpload(folder, { maxBytes }) {
     uploadUrl: api('upload'),
     fields: { ...params, api_key: env.CLOUDINARY_API_KEY, signature: sign(params) },
     maxBytes,
-    accept: ACCEPT,
+    accept,
   };
 }
 

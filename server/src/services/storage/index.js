@@ -1,13 +1,16 @@
 // Image storage facade. Uses Cloudinary when configured, otherwise local files (development only).
 // Both providers expose the same interface:
-//   signUpload(folder)          -> { provider, uploadUrl, fields, maxBytes, accept }
+//   signUpload(folder, { maxBytes, documents }) -> { provider, uploadUrl, fields, maxBytes, accept }
+//                               (documents: also accept PDF)
 //   isOwnedAsset({url, publicId}) -> true only for files this store uploaded
 //   destroy(publicId)           -> deletes the file (callers treat failures as non-fatal)
 import { env } from '../../config/env.js';
 import * as cloudinary from './cloudinary.js';
 import * as local from './local.js';
 
-export const UPLOAD_FOLDERS = ['products', 'certificates', 'banners', 'payment-proofs'];
+export const UPLOAD_FOLDERS = ['products', 'certificates', 'banners', 'payment-proofs', 'investigations', 'investigation-reports'];
+// Folders that also take PDF files (investigation result reports)
+export const DOCUMENT_FOLDERS = ['investigation-reports'];
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // Cloudinary free plan limit for images
 
 export const storage = env.cloudinaryEnabled ? cloudinary : local;
