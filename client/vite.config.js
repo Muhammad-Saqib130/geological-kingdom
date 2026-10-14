@@ -12,6 +12,8 @@ export default defineConfig(({ mode }) => {
       // Proxy API calls to Express in dev so cookies stay same-origin
       proxy: {
         '/api': env.API_PROXY_TARGET || 'http://localhost:5000',
+        // Locally stored uploads (development only; production images come from Cloudinary)
+        '/uploads': env.API_PROXY_TARGET || 'http://localhost:5000',
       },
     },
   }

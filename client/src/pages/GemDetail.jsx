@@ -30,7 +30,7 @@ function GemView({ gem, related }) {
     ['Clarity', gem.clarity],
     ['Origin', gem.origin],
     ['Treatment', gem.treatment],
-    ['Certificate', gem.certificate],
+    ['Certificate', [gem.certificate?.lab, gem.certificate?.number].filter(Boolean).join(' · ')],
   ].filter(([, v]) => v)
 
   const enquiry = WHATSAPP

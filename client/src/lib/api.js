@@ -6,15 +6,24 @@ export class ApiError extends Error {
     this.status = status
     this.details = details
   }
+
+  // { field: message } for form validation errors, e.g. { name: 'Name is required' }
+  get fieldErrors() {
+    const out = {}
+    for (const d of this.details ?? []) if (d?.path && !out[d.path]) out[d.path] = d.message
+    return out
+  }
 }
 
-export async function api(path, { signal, ...init } = {}) {
+// api('/products') or api('/admin/products', { method: 'POST', json: {...} })
+export async function api(path, { json, headers, ...init } = {}) {
   const res = await fetch(`${BASE}/api${path}`, {
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...init.headers },
-    signal,
     ...init,
+    headers: { ...(json !== undefined && { 'Content-Type': 'application/json' }), ...headers },
+    ...(json !== undefined && { body: JSON.stringify(json) }),
   })
+  if (res.status === 204) return null
   const data = await res.json().catch(() => null)
   if (!res.ok) throw new ApiError(res.status, data?.error ?? res.statusText, data?.details)
   return data
@@ -23,7 +32,9 @@ export async function api(path, { signal, ...init } = {}) {
 export const toQuery = (params) => {
   const qs = new URLSearchParams()
   for (const [k, v] of Object.entries(params)) {
-    if (v !== undefined && v !== null && v !== '') qs.set(k, v)
+    if (v === undefined || v === null || v === '') continue
+    // Arrays become repeated params (?origin=a&origin=b); values may contain commas
+    for (const item of Array.isArray(v) ? v : [v]) qs.append(k, item)
   }
   const s = qs.toString()
   return s ? `?${s}` : ''
