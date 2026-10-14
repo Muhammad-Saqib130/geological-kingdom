@@ -1,0 +1,35 @@
+// Sample catalog for development and demos. Upserted by category slug / product SKU.
+
+export const categories = [
+  { name: 'Emerald', colorHex: '#1f7a4d', sortOrder: 1, showOnHome: true, description: 'Green beryl, prized from the Swat valley and Panjshir.' },
+  { name: 'Ruby', colorHex: '#b3123a', sortOrder: 2, showOnHome: true, description: 'Red corundum from the marble deposits of Hunza and Jegdalek.' },
+  { name: 'Sapphire', colorHex: '#2c4fa3', sortOrder: 3, showOnHome: true, description: 'Corundum in every colour but red.' },
+  { name: 'Aquamarine', colorHex: '#7fc4dc', sortOrder: 4, showOnHome: true, description: 'Sea-blue beryl from the high valleys of Skardu and Shigar.' },
+  { name: 'Tourmaline', colorHex: '#c9677f', sortOrder: 5, showOnHome: true, description: 'The most colourful gem family, including bicolour crystals.' },
+  { name: 'Kunzite', colorHex: '#e7a6c8', sortOrder: 6, description: 'Soft pink spodumene, often in large clean sizes.' },
+  { name: 'Topaz', colorHex: '#d99a3a', sortOrder: 7, description: 'Including the warm sherry topaz of Katlang, Mardan.' },
+  { name: 'Peridot', colorHex: '#8fb83a', sortOrder: 8, description: 'Lively olive-green gems from the peaks of Kohistan.' },
+];
+
+// `category` is the category name; the seed resolves it to an id.
+export const products = [
+  { sku: 'GK-EM-001', category: 'Emerald', name: 'Swat Emerald', color: 'Vivid green', colorHex: '#1f7a4d', carat: 1.42, dimensionsMm: '7.9 x 6.1 x 4.2', shape: 'Emerald', clarity: 'Eye clean', origin: 'Swat, Pakistan', treatment: 'Oiled', certificate: { lab: 'GIA', number: '2245871903' }, pricePKR: 185000, isFeatured: true, description: 'A bright, saturated emerald from the historic Mingora mines of Swat, with a classic step cut that shows its depth of colour.' },
+  { sku: 'GK-EM-002', category: 'Emerald', name: 'Panjshir Emerald', color: 'Deep green', colorHex: '#0f5a3a', carat: 2.1, dimensionsMm: '9.0 x 7.0 x 4.8', shape: 'Oval', clarity: 'Slightly included', origin: 'Panjshir, Afghanistan', treatment: 'Oiled', pricePKR: 320000, isFeatured: true, description: 'Rich, cool-toned green with lively brilliance.' },
+  { sku: 'GK-RU-001', category: 'Ruby', name: 'Hunza Ruby', color: 'Pinkish red', colorHex: '#b3123a', carat: 0.95, dimensionsMm: '6.3 x 5.1 x 3.4', shape: 'Oval', clarity: 'Slightly included', origin: 'Hunza, Pakistan', treatment: 'Natural', certificate: { lab: 'PGL Peshawar', number: 'PGL-24-0912' }, pricePKR: 140000, description: 'Unheated ruby from the marble deposits of the Hunza valley.' },
+  { sku: 'GK-RU-002', category: 'Ruby', name: 'Jegdalek Ruby', color: 'Crimson', colorHex: '#9e0f2f', carat: 1.3, dimensionsMm: '7.0 x 5.8 x 3.9', shape: 'Cushion', clarity: 'Slightly included', origin: 'Jegdalek, Afghanistan', treatment: 'Natural', pricePKR: 175000, description: 'Deep crimson ruby with the soft glow typical of marble-hosted stones.' },
+  { sku: 'GK-SA-001', category: 'Sapphire', name: 'Cornflower Sapphire', color: 'Cornflower blue', colorHex: '#2c4fa3', carat: 1.15, dimensionsMm: '6.8 x 5.6 x 3.9', shape: 'Cushion', clarity: 'Eye clean', origin: 'Sri Lanka', treatment: 'Heated', pricePKR: 210000, description: 'Velvety mid-blue sapphire with even colour.' },
+  { sku: 'GK-SA-002', category: 'Sapphire', name: 'Pink Sapphire', color: 'Bubblegum pink', colorHex: '#e0629a', carat: 0.88, dimensionsMm: '6.1 x 4.9 x 3.2', shape: 'Oval', clarity: 'Eye clean', origin: 'Sri Lanka', treatment: 'Heated', pricePKR: 98000, description: 'Bright, clean pink sapphire with excellent sparkle.' },
+  { sku: 'GK-AQ-001', category: 'Aquamarine', name: 'Skardu Aquamarine', color: 'Sky blue', colorHex: '#7fc4dc', carat: 4.6, dimensionsMm: '12.0 x 9.0 x 6.2', shape: 'Emerald', clarity: 'Eye clean', origin: 'Skardu, Pakistan', treatment: 'Natural', pricePKR: 88000, isFeatured: true, description: 'Crisp, icy blue aquamarine from the high Karakoram.' },
+  { sku: 'GK-AQ-002', category: 'Aquamarine', name: 'Shigar Aquamarine', color: 'Ocean blue', colorHex: '#4fa3c4', carat: 6.2, dimensionsMm: '13.5 x 10.0 x 7.1', shape: 'Pear', clarity: 'Loupe clean', origin: 'Shigar, Pakistan', treatment: 'Natural', pricePKR: 132000, description: 'A deeper blue aquamarine from the Shigar valley, cut as a graceful pear.' },
+  { sku: 'GK-TO-001', category: 'Tourmaline', name: 'Bicolor Tourmaline', color: 'Pink & green', colorHex: '#c9677f', carat: 3.2, dimensionsMm: '11.5 x 7.0 x 5.1', shape: 'Emerald', clarity: 'Eye clean', origin: 'Gilgit, Pakistan', treatment: 'Natural', pricePKR: 72000, description: 'A watermelon-style tourmaline showing both pink and green zones.' },
+  { sku: 'GK-KU-001', category: 'Kunzite', name: 'Pink Kunzite', color: 'Soft pink', colorHex: '#e7a6c8', carat: 8.35, dimensionsMm: '14.2 x 10.1 x 7.6', shape: 'Cushion', clarity: 'Loupe clean', origin: 'Nuristan, Afghanistan', treatment: 'Natural', pricePKR: 96000, isFeatured: true, description: 'A large, clean kunzite with gentle pink colour that glows in daylight.' },
+  { sku: 'GK-TP-001', category: 'Topaz', name: 'Golden Topaz', color: 'Sherry gold', colorHex: '#d99a3a', carat: 5.8, dimensionsMm: '13.0 x 9.2 x 6.4', shape: 'Pear', clarity: 'Loupe clean', origin: 'Katlang, Pakistan', treatment: 'Natural', pricePKR: 115000, description: 'Warm sherry-toned topaz from the Katlang deposit near Mardan.' },
+  { sku: 'GK-PE-001', category: 'Peridot', name: 'Peridot Cushion', color: 'Olive green', colorHex: '#8fb83a', carat: 6.1, dimensionsMm: '11.8 x 11.6 x 7.0', shape: 'Cushion', clarity: 'Eye clean', origin: 'Kohistan, Pakistan', treatment: 'Natural', pricePKR: 54000, description: 'Lively, high-altitude peridot from Kohistan with excellent transparency.' },
+];
+
+// Development placeholders, flagged isSample so the site labels them. Replace with real reviews before launch.
+export const testimonials = [
+  { name: 'Sample review', location: 'Lahore', rating: 5, sortOrder: 1, quote: 'The emerald arrived exactly as photographed, with the origin and oil treatment clearly stated. Packaging was beautiful and insured.' },
+  { name: 'Sample review', location: 'London, UK', rating: 5, sortOrder: 2, quote: 'I sent photos of a sapphire I bought on holiday for a Gem Investigation. Clear, honest answer within days.' },
+  { name: 'Sample review', location: 'Dubai, UAE', rating: 5, sortOrder: 3, quote: 'Fair prices in USD, quick replies on WhatsApp, and the aquamarine is even brighter in person.' },
+];

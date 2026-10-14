@@ -1,0 +1,48 @@
+# Render Blueprint for the API server. The shop itself is on Vercel and forwards /api,
+# /uploads, /sitemap.xml, /robots.txt and crawler visits here (client/vercel.json).
+# Deploy: Render dashboard > New > Blueprint > pick this repo. Step-by-step: DEPLOY.md.
+services:
+  - type: web
+    name: geological-kingdom-api
+    runtime: node
+    plan: free # sleeps after 15 idle minutes; use Starter for a live shop (DEPLOY.md)
+    region: singapore # closest Render region to Pakistan
+    branch: main
+    rootDir: server
+    # Dev dependencies (the in-memory test database) are not needed in production
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # The site is on Vercel, not served from here
+      - key: SERVE_CLIENT
+        value: "false"
+      # Visitor -> Vercel -> Render's load balancer -> this server
+      - key: TRUST_PROXY
+        value: "2"
+      # Your Vercel address, e.g. https://geological-kingdom.vercel.app (used for emails,
+      # payment redirects, the sitemap and as the allowed origin)
+      - key: CLIENT_URL
+        sync: false
+      # MongoDB Atlas connection string (Atlas > Connect > Drivers)
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      # Cloudinary (Settings > API Keys): stores product photos, payment proofs and reports
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # First admin account, created on first start. Password: at least 12 characters.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Fill the empty database with the sample gemstones on first start
+      - key: SEED_ON_START
+        value: "true"
