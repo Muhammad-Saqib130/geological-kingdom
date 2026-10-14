@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { env } from './config/env.js';
+import { authenticate } from './middleware/auth.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import apiRoutes from './routes/index.js';
 
@@ -16,6 +17,7 @@ export function createApp() {
   app.use(cors({ origin: env.clientOrigins, credentials: true }));
   app.use(express.json({ limit: '1mb' }));
   app.use(cookieParser());
+  app.use(authenticate);
 
   app.use('/api', apiRoutes);
 

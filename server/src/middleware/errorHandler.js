@@ -15,6 +15,13 @@ export function errorHandler(err, _req, res, _next) {
       details: err.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
     });
   }
+  // Body parser errors (malformed JSON, payload too large) carry a safe 4xx status
+  if (err?.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Request body is not valid JSON' });
+  }
+  if (err?.expose && err.status >= 400 && err.status < 500) {
+    return res.status(err.status).json({ error: err.message });
+  }
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({ error: err.message, details: err.details });
   }
