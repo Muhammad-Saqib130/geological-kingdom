@@ -1,22 +1,12 @@
 import mongoose from 'mongoose';
 import { slugify } from '../utils/slugify.js';
+import { imageSchema } from './imageSchema.js';
 import { toJSON } from './plugins.js';
 
 export const PRODUCT_SHAPES = ['Round', 'Oval', 'Cushion', 'Emerald', 'Pear', 'Marquise', 'Heart', 'Princess', 'Trillion', 'Radiant', 'Asscher', 'Cabochon', 'Rough', 'Other'];
 export const PRODUCT_TREATMENTS = ['Natural', 'Heated', 'Oiled', 'Irradiated', 'Filled', 'Diffused', 'Unknown'];
 export const MAX_PRODUCT_IMAGES = 12;
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-const imageSchema = new mongoose.Schema(
-  {
-    url: { type: String, required: true },
-    publicId: { type: String, required: true }, // storage key, used to delete the file
-    alt: { type: String, trim: true, maxlength: 160 },
-    width: Number,
-    height: Number,
-  },
-  { _id: false },
-);
 
 const productSchema = new mongoose.Schema(
   {

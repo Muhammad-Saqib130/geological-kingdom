@@ -11,6 +11,7 @@ import {
   updateProduct,
   updateProductBody,
 } from '../../controllers/admin/productAdminController.js';
+import { getHomepage, homepageBody, updateHomepage } from '../../controllers/admin/settingsAdminController.js';
 import { localQuery, signBody, signUpload, uploadLocal } from '../../controllers/admin/uploadController.js';
 import { requireAdmin } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validate.js';
@@ -32,6 +33,9 @@ router.patch('/products/:id', validate(idParams, 'params'), validate(updateProdu
 router.delete('/products/:id', validate(idParams, 'params'), deleteProduct);
 
 router.get('/categories', listCategoryOptions);
+
+router.get('/settings/homepage', getHomepage);
+router.put('/settings/homepage', validate(homepageBody), updateHomepage);
 
 router.post('/uploads/sign', validate(signBody), signUpload);
 router.post(

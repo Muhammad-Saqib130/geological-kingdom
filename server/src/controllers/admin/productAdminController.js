@@ -2,23 +2,13 @@ import mongoose from 'mongoose';
 import { z } from 'zod';
 import { Category } from '../../models/Category.js';
 import { MAX_PRODUCT_IMAGES, PRODUCT_SHAPES, PRODUCT_TREATMENTS, Product, SLUG_PATTERN } from '../../models/Product.js';
-import { destroyAssets, storage } from '../../services/storage/index.js';
+import { destroyAssets } from '../../services/storage/index.js';
 import { AppError } from '../../utils/AppError.js';
 import { escapeRegex } from '../../utils/slugify.js';
+import { imageRef } from '../../validators/image.js';
 
 const objectId = z.string().regex(/^[a-f0-9]{24}$/i, 'Invalid id');
 const text = (max) => z.string().trim().max(max);
-
-// Only references to files uploaded through /api/admin/uploads are accepted.
-const imageRef = z
-  .object({
-    url: z.string().max(500),
-    publicId: z.string().max(300),
-    alt: text(160).optional(),
-    width: z.number().int().positive().max(50_000).optional(),
-    height: z.number().int().positive().max(50_000).optional(),
-  })
-  .refine((img) => storage.isOwnedAsset(img), { message: 'Upload images through the admin panel' });
 
 const fields = {
   name: text(120).min(2, 'Name is required'),

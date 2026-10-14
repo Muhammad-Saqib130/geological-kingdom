@@ -1,23 +1,47 @@
 import { z } from 'zod';
 import { Category } from '../models/Category.js';
 import { Product } from '../models/Product.js';
+import { Settings } from '../models/Settings.js';
 import { Subscriber } from '../models/Subscriber.js';
 import { Testimonial } from '../models/Testimonial.js';
+import { homepageJSON } from './admin/settingsAdminController.js';
 
 const populateCategory = (q) => q.populate('category', 'name slug');
+
+// Top origins for the "Shop by origin" grid, with a count, a tint and a sample photo.
+// Computed in JS: a boutique catalogue is small, and this avoids aggregation operators
+// that MongoDB-compatible dev servers may lack.
+async function topOrigins(limit = 8) {
+  const products = await Product.find({ isActive: true, origin: { $nin: [null, ''] } })
+    .sort({ isFeatured: -1, createdAt: -1 })
+    .select('origin colorHex images')
+    .limit(1000)
+    .lean();
+  const byOrigin = new Map();
+  for (const p of products) {
+    const o = byOrigin.get(p.origin) ?? { name: p.origin, count: 0, colorHex: null, image: null };
+    o.count += 1;
+    if (!o.colorHex && p.colorHex) o.colorHex = p.colorHex;
+    if (!o.image && p.images?.[0]) o.image = { url: p.images[0].url, alt: p.images[0].alt };
+    byOrigin.set(p.origin, o);
+  }
+  return [...byOrigin.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)).slice(0, limit);
+}
 
 // Everything the home page needs, in one request.
 export async function getHome(_req, res) {
   const active = { isActive: true };
-  const [categories, featured, newArrivals, testimonials] = await Promise.all([
+  const [categories, featured, newArrivals, testimonials, origins, settings] = await Promise.all([
     Category.find({ isActive: true }).sort({ sortOrder: 1, name: 1 }),
     populateCategory(Product.find({ ...active, isFeatured: true })).sort({ updatedAt: -1 }).limit(8),
     populateCategory(Product.find({ ...active, stock: { $gt: 0 } })).sort({ createdAt: -1 }).limit(8),
     Testimonial.find({ isPublished: true }).sort({ sortOrder: 1, createdAt: -1 }).limit(6),
+    topOrigins(),
+    Settings.get(),
   ]);
 
   res.set('Cache-Control', 'public, max-age=60');
-  res.json({ categories, featured, newArrivals, testimonials });
+  res.json({ categories, featured, newArrivals, testimonials, origins, homepage: homepageJSON(settings) });
 }
 
 export async function listTestimonials(_req, res) {

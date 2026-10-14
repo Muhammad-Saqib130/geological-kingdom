@@ -7,7 +7,7 @@ import { env } from '../../config/env.js';
 import * as cloudinary from './cloudinary.js';
 import * as local from './local.js';
 
-export const UPLOAD_FOLDERS = ['products', 'certificates'];
+export const UPLOAD_FOLDERS = ['products', 'certificates', 'banners'];
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // Cloudinary free plan limit for images
 
 export const storage = env.cloudinaryEnabled ? cloudinary : local;
