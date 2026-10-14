@@ -8,6 +8,7 @@ export const TEST_JWT_SECRET = 'test-only-jwt-secret-0123456789-abcdefghijklmnop
 let mongod;
 let server;
 let mongoose;
+export let uploadDir;
 
 export async function startTestServer() {
   let uri = process.env.MONGODB_URI_TEST;
@@ -21,7 +22,15 @@ export async function startTestServer() {
   }
 
   // Must be set before any app module is imported: config/env.js reads it once at import time.
+  const { mkdtemp } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  uploadDir = await mkdtemp(`${tmpdir()}/gk-uploads-`);
+
+  // Cloudinary is never used in tests; clear anything inherited from the shell.
+  for (const key of ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET']) delete process.env[key];
+
   Object.assign(process.env, {
+    LOCAL_UPLOAD_DIR: uploadDir,
     NODE_ENV: 'test',
     MONGODB_URI: uri,
     JWT_SECRET: TEST_JWT_SECRET,
@@ -51,6 +60,20 @@ export async function stopTestServer() {
     await mongoose.disconnect();
   }
   await mongod?.stop();
+  if (uploadDir) await (await import('node:fs/promises')).rm(uploadDir, { recursive: true, force: true });
+}
+
+// Creates a user with the given role directly in the database and signs them in.
+export async function signedInClient(baseUrl, role = 'customer') {
+  const { User } = await import('../src/models/User.js');
+  const { hashPassword } = await import('../src/services/authService.js');
+  const email = uniqueEmail(role);
+  const password = 'correct horse battery';
+  await User.create({ name: `Test ${role}`, email, role, passwordHash: await hashPassword(password) });
+  const client = createClient(baseUrl);
+  const res = await client.post('/api/auth/login', { email, password });
+  if (res.status !== 200) throw new Error(`login failed: ${res.status}`);
+  return client;
 }
 
 // Minimal HTTP client that remembers the session cookie like a browser would.
@@ -89,6 +112,8 @@ export function createClient(baseUrl, cookieName = 'gk_session') {
   return {
     get: (path, opts) => request('GET', path, undefined, opts),
     post: (path, body, opts) => request('POST', path, body, opts),
+    patch: (path, body, opts) => request('PATCH', path, body, opts),
+    delete: (path, opts) => request('DELETE', path, undefined, opts),
     get cookie() {
       return cookie;
     },

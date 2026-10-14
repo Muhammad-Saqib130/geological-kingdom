@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Category } from '../models/Category.js';
-import { Product } from '../models/Product.js';
+import { PRODUCT_TREATMENTS, Product } from '../models/Product.js';
 import { AppError } from '../utils/AppError.js';
 import { escapeRegex } from '../utils/slugify.js';
 
@@ -13,18 +13,26 @@ const SORTS = {
 
 const CATEGORY_FIELDS = 'name slug';
 
-const csv = z
-  .string()
-  .trim()
-  .transform((s) => s.split(',').map((v) => v.trim()).filter(Boolean))
-  .optional();
+// Multi-value filters: repeated params (?origin=a&origin=b) always work.
+// Values that can never contain a comma (slugs, enum names) may also be comma-separated.
+const multi = ({ commas }) =>
+  z
+    .union([z.string(), z.array(z.string())])
+    .transform((v) =>
+      (Array.isArray(v) ? v : [v])
+        .flatMap((s) => (commas ? s.split(',') : [s]))
+        .map((s) => s.trim())
+        .filter(Boolean),
+    )
+    .optional();
 
 const num = z.coerce.number().nonnegative().optional();
 
 export const listProductsQuery = z.object({
   q: z.string().trim().max(80).optional(),
-  category: csv, // category slugs
-  origin: csv,
+  category: multi({ commas: true }), // category slugs
+  origin: multi({ commas: false }), // origins contain commas: "Swat, Pakistan"
+  treatment: multi({ commas: true }).pipe(z.array(z.enum(PRODUCT_TREATMENTS)).optional()),
   minPrice: num, // PKR
   maxPrice: num, // PKR
   minCarat: num,
@@ -42,7 +50,7 @@ const range = (min, max) => {
 };
 
 export async function listProducts(req, res) {
-  const { q, category, origin, minPrice, maxPrice, minCarat, maxCarat, featured, inStock, sort, page, limit } =
+  const { q, category, origin, treatment, minPrice, maxPrice, minCarat, maxCarat, featured, inStock, sort, page, limit } =
     req.validated.query;
 
   const filter = { isActive: true };
@@ -51,6 +59,7 @@ export async function listProducts(req, res) {
     filter.category = { $in: ids };
   }
   if (origin?.length) filter.origin = { $in: origin };
+  if (treatment?.length) filter.treatment = { $in: treatment };
   if (featured) filter.isFeatured = featured === 'true';
   if (inStock === 'true') filter.stock = { $gt: 0 };
   const price = range(minPrice, maxPrice);
@@ -80,9 +89,10 @@ export async function getProductFilters(_req, res) {
   const active = { isActive: true };
   const edge = (field, dir) => Product.findOne(active).sort({ [field]: dir }).select(field).lean();
 
-  const [categoryIds, origins, cheapest, priciest, smallest, largest] = await Promise.all([
+  const [categoryIds, origins, treatments, cheapest, priciest, smallest, largest] = await Promise.all([
     Product.distinct('category', active),
     Product.distinct('origin', active),
+    Product.distinct('treatment', active),
     edge('pricePKR', 1),
     edge('pricePKR', -1),
     edge('carat', 1),
@@ -95,6 +105,8 @@ export async function getProductFilters(_req, res) {
   res.json({
     categories,
     origins: origins.filter(Boolean).sort(),
+    // Keep the canonical order (Natural first) rather than alphabetical
+    treatments: PRODUCT_TREATMENTS.filter((t) => treatments.includes(t)),
     minPrice: cheapest?.pricePKR ?? 0,
     maxPrice: priciest?.pricePKR ?? 0,
     minCarat: smallest?.carat ?? 0,

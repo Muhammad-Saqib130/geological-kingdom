@@ -37,7 +37,13 @@ export function errorHandler(err, _req, res, _next) {
     return res.status(503).set('Retry-After', '10').json({ error: 'Service temporarily unavailable. Please try again shortly.' });
   }
   if (err?.code === 11000) {
-    return res.status(409).json({ error: 'Duplicate value', details: err.keyValue });
+    // MongoDB reports the field in keyValue; fall back to the index name in the message ("index: sku_1").
+    const fromMessage = /index: (\w+?)_-?1\b/.exec(err.message ?? '')?.[1];
+    const fields = Object.keys(err.keyValue ?? err.keyPattern ?? (fromMessage ? { [fromMessage]: 1 } : {}));
+    return res.status(409).json({
+      error: fields.length ? `This ${fields.join(', ')} is already in use` : 'Duplicate value',
+      details: fields.map((path) => ({ path, message: `This ${path} is already in use` })),
+    });
   }
 
   console.error(err);
