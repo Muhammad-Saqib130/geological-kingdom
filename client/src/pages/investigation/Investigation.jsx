@@ -6,7 +6,7 @@ import PhotoPicker from '../../components/investigation/PhotoPicker.jsx'
 import { api } from '../../lib/api.js'
 import { COUNTRIES } from '../../lib/geo.js'
 import { FEE_USD, GEM_SUGGESTIONS, MAX_GEMS, MAX_PHOTOS, VERDICTS } from '../../lib/investigationLabels.js'
-import { whatsappLink } from '../../lib/whatsapp.js'
+import { useWhatsapp } from '../../lib/whatsapp.js'
 import { useAuth } from '../../store/authStore.js'
 import { formatMoney, useCurrency } from '../../store/currencyStore.js'
 
@@ -48,7 +48,8 @@ export default function Investigation() {
   const formRef = useRef(null)
   const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   const pkrPerUsd = useCurrency((s) => s.pkrPerUsd)
-  const help = whatsappLink('Hello Geological Kingdom, I have a question about Gem Investigation.')
+  const whatsappApi = useWhatsapp()
+  const help = whatsappApi.link('Hello Geological Kingdom, I have a question about Gem Investigation.')
 
   return (
     <>

@@ -6,7 +6,7 @@ import InvestigationBadge from '../../components/investigation/InvestigationBadg
 import { api } from '../../lib/api.js'
 import { imageUrl } from '../../lib/images.js'
 import { INVESTIGATION_STATUS_LABELS, STATUS_MESSAGES, STEPS, VERDICTS } from '../../lib/investigationLabels.js'
-import { whatsappLink } from '../../lib/whatsapp.js'
+import { useWhatsapp } from '../../lib/whatsapp.js'
 
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 
@@ -92,7 +92,8 @@ export default function TrackInvestigation() {
 }
 
 function Result({ inv, onBack }) {
-  const help = whatsappLink(`Hello Geological Kingdom, I have a question about my Gem Investigation ${inv.trackingId}.`)
+  const whatsappApi = useWhatsapp()
+  const help = whatsappApi.link(`Hello Geological Kingdom, I have a question about my Gem Investigation ${inv.trackingId}.`)
   const verdict = VERDICTS.find((v) => v.value === inv.result?.verdict)
   const report = inv.result?.report
   const reportIsPdf = report && (report.format === 'pdf' || /\.pdf($|\?)/i.test(report.url))

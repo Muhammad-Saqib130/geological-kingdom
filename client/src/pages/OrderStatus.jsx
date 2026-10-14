@@ -10,7 +10,7 @@ import { countryName } from '../lib/geo.js'
 import { imageUrl } from '../lib/images.js'
 import { METHOD_LABELS } from '../lib/orderLabels.js'
 import { uploadImage } from '../lib/upload.js'
-import { whatsappLink } from '../lib/whatsapp.js'
+import { useWhatsapp } from '../lib/whatsapp.js'
 import { formatMoney } from '../store/currencyStore.js'
 import NotFound from './NotFound.jsx'
 
@@ -358,7 +358,8 @@ function CustomerActions({ order, act }) {
   const [busy, setBusy] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const canCancel = order.status === 'pending' && ['unpaid', 'rejected'].includes(order.payment.status)
-  const help = whatsappLink(`Hello Geological Kingdom, I have a question about order ${order.orderNumber}.`)
+  const whatsappApi = useWhatsapp()
+  const help = whatsappApi.link(`Hello Geological Kingdom, I have a question about order ${order.orderNumber}.`)
 
   return (
     <section className="space-y-3">

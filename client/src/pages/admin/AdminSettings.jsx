@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Card, TextField } from '../../components/admin/form.jsx'
 import { useApi } from '../../hooks/useApi.js'
 import { api } from '../../lib/api.js'
-import { formatMoney, useCurrency } from '../../store/currencyStore.js'
+import { setStoreInfo } from '../../lib/whatsapp.js'
+import { formatMoney } from '../../store/currencyStore.js'
 import { toast } from '../../store/toastStore.js'
 
 // Settings -> form strings
@@ -14,11 +15,15 @@ const toForm = (s) => ({
   bank: { bankName: '', accountTitle: '', accountNumber: '', iban: '', ...s.paymentAccounts?.bank },
   jazzcash: { accountTitle: '', number: '', ...s.paymentAccounts?.jazzcash },
   easypaisa: { accountTitle: '', number: '', ...s.paymentAccounts?.easypaisa },
+  whatsappNumber: s.whatsappNumber ? `+${s.whatsappNumber}` : '',
+  lowStockThreshold: String(s.lowStockThreshold ?? 1),
 })
+
+// Same normalisation as the server: digits only, international format
+const waDigits = (v) => v.replace(/[\s()-]/g, '').replace(/^(\+|00)/, '')
 
 export default function AdminSettings() {
   const { data, error } = useApi('/admin/settings/store')
-  const loadRate = useCurrency((s) => s.loadRate)
   const [form, setForm] = useState(null)
   const [saved, setSaved] = useState(null)
   const [errors, setErrors] = useState({})
@@ -54,11 +59,17 @@ export default function AdminSettings() {
       pkrPerUsd: num(form.pkrPerUsd),
       shipping: { domesticPKR: num(form.domesticPKR), internationalUSD: num(form.internationalUSD), freeDomesticOverPKR: num(form.freeDomesticOverPKR) },
       paymentAccounts: { bank: form.bank, jazzcash: form.jazzcash, easypaisa: form.easypaisa },
+      whatsappNumber: form.whatsappNumber.trim(),
+      lowStockThreshold: num(form.lowStockThreshold),
     }
     const errs = {}
     if (!(body.pkrPerUsd >= 1)) errs.pkrPerUsd = 'Enter the PKR value of 1 USD'
     for (const k of ['domesticPKR', 'freeDomesticOverPKR']) if (!Number.isInteger(body.shipping[k]) || body.shipping[k] < 0) errs[k] = 'Whole rupees, 0 or more'
     if (!(body.shipping.internationalUSD >= 0)) errs.internationalUSD = 'Enter 0 or more'
+    const wa = waDigits(body.whatsappNumber)
+    if (wa && !/^\d{8,15}$/.test(wa)) errs.whatsappNumber = 'Use international format, e.g. +92 300 1234567'
+    else if (wa.startsWith('0')) errs.whatsappNumber = 'Start with the country code, e.g. +92 300 1234567 rather than 0300…'
+    if (!Number.isInteger(body.lowStockThreshold) || body.lowStockThreshold < 0) errs.lowStockThreshold = 'Whole number, 0 or more'
     setErrors(errs)
     if (Object.keys(errs).length) return
 
@@ -68,7 +79,7 @@ export default function AdminSettings() {
       const f = toForm(settings)
       setForm(f)
       setSaved(f)
-      loadRate() // the storefront's USD prices follow the new rate
+      setStoreInfo(settings) // the storefront's USD prices and WhatsApp links follow straight away
       toast.success('Settings saved')
     } catch (err) {
       setErrors(Object.fromEntries(Object.entries(err.fieldErrors ?? {}).map(([k, v]) => [k.split('.').pop(), v])))
@@ -86,7 +97,7 @@ export default function AdminSettings() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-4xl">Settings</h1>
-          <p className="mt-1 text-sm text-muted">Exchange rate, shipping and the accounts customers pay into. Changes apply to new orders.</p>
+          <p className="mt-1 text-sm text-muted">Exchange rate, shipping, contact number and the accounts customers pay into. Changes apply to new orders.</p>
         </div>
         <div className="flex items-center gap-3">
           {dirty && <span className="text-xs text-muted">Unsaved changes</span>}
@@ -126,6 +137,33 @@ export default function AdminSettings() {
               className="sm:col-span-2"
             />
           </div>
+        </Card>
+
+        <Card title="Contact">
+          <TextField
+            label="WhatsApp number"
+            type="tel"
+            value={form.whatsappNumber}
+            onChange={set('whatsappNumber')}
+            error={errors.whatsappNumber}
+            maxLength={20}
+            placeholder="+92 300 1234567"
+            hint="Used for every WhatsApp link and the phone number in the header and footer. Include the country code."
+          />
+        </Card>
+
+        <Card title="Dashboard alerts">
+          <TextField
+            label="Low stock at or below"
+            type="number"
+            inputMode="numeric"
+            min="0"
+            step="1"
+            value={form.lowStockThreshold}
+            onChange={set('lowStockThreshold')}
+            error={errors.lowStockThreshold}
+            hint="Active products with this many or fewer in stock are listed on the dashboard. Most stones are one of a kind, so 1 is a good default."
+          />
         </Card>
 
         <Card title="Bank transfer" className="lg:col-span-2">

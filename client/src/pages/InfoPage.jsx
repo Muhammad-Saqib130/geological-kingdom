@@ -1,9 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
 import { TREATMENTS, TREATMENT_NOTES } from '../lib/catalog.js'
-import { whatsappLink } from '../lib/whatsapp.js'
+import { useWhatsapp } from '../lib/whatsapp.js'
 import NotFound from './NotFound.jsx'
 
-const contact = whatsappLink('Hello Geological Kingdom, I have a question.')
 
 const PAGES = {
   shipping: {
@@ -46,6 +45,7 @@ const PAGES = {
 }
 
 export default function InfoPage() {
+  const contact = useWhatsapp().link('Hello Geological Kingdom, I have a question.')
   const page = PAGES[useParams().slug]
   if (!page) return <NotFound />
 

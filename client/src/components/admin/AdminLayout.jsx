@@ -4,6 +4,7 @@ import { useAuth } from '../../store/authStore.js'
 import Logo from '../Logo.jsx'
 
 const nav = [
+  { to: '/admin', label: 'Dashboard', end: true },
   { to: '/admin/orders', label: 'Orders' },
   { to: '/admin/investigations', label: 'Investigations' },
   { to: '/admin/products', label: 'Products' },
@@ -44,7 +45,7 @@ export default function AdminLayout() {
           <span className="hidden text-xs uppercase tracking-[0.2em] text-gold-600 sm:inline">Admin</span>
           <nav aria-label="Admin" className="scrollbar-none flex min-w-0 flex-1 gap-5 overflow-x-auto whitespace-nowrap">
             {nav.map((n) => (
-              <NavLink key={n.to} to={n.to} className={({ isActive }) => `text-sm ${isActive ? 'font-semibold text-emerald-900' : 'text-muted hover:text-emerald-900'}`}>
+              <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `text-sm ${isActive ? 'font-semibold text-emerald-900' : 'text-muted hover:text-emerald-900'}`}>
                 {n.label}
               </NavLink>
             ))}

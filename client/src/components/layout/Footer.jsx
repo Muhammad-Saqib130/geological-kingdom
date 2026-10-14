@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useApi } from '../../hooks/useApi.js'
-import { email, phoneDisplay, phoneHref, socials } from '../../lib/contact.js'
-import { whatsappLink } from '../../lib/whatsapp.js'
+import { email, socials } from '../../lib/contact.js'
+import { useWhatsapp } from '../../lib/whatsapp.js'
 import CurrencyToggle from '../CurrencyToggle.jsx'
 import { MailIcon, PhoneIcon, PinIcon, SocialIcon, WhatsAppIcon } from '../icons.jsx'
 import Logo from '../Logo.jsx'
@@ -15,7 +15,8 @@ const link = 'text-sm text-muted transition-colors hover:text-gold-600'
 // Light, five-column footer.
 export default function Footer() {
   const categories = useApi('/categories').data?.items ?? []
-  const whatsapp = whatsappLink('Hello Geological Kingdom, I have a question.')
+  const { link: waLink, display: phoneDisplay, telHref: phoneHref } = useWhatsapp()
+  const whatsapp = waLink('Hello Geological Kingdom, I have a question.')
 
   return (
     <footer className="border-t border-ivory-200 bg-white">

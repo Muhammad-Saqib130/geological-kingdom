@@ -1,9 +1,5 @@
 // Public contact details from client env (all optional).
-const NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER // e.g. 923001234567
-
-// "923001234567" -> "+92 300 1234567"
-export const phoneDisplay = NUMBER ? `+${NUMBER.slice(0, 2)} ${NUMBER.slice(2, 5)} ${NUMBER.slice(5)}` : null
-export const phoneHref = NUMBER ? `tel:+${NUMBER}` : null
+// (The WhatsApp/phone number is in lib/whatsapp.js: it is editable in Admin > Settings.)
 export const email = import.meta.env.VITE_CONTACT_EMAIL || null
 
 // Social profiles; only the ones configured are shown

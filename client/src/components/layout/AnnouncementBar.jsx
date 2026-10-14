@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { phoneDisplay, phoneHref } from '../../lib/contact.js'
+import { useWhatsapp } from '../../lib/whatsapp.js'
 import { useAuth } from '../../store/authStore.js'
 import CurrencyToggle from '../CurrencyToggle.jsx'
 import { PhoneIcon } from '../icons.jsx'
@@ -15,6 +15,7 @@ const MESSAGES = [
 export default function AnnouncementBar() {
   const [index, setIndex] = useState(0)
   const user = useAuth((s) => s.user)
+  const { display: phoneDisplay, telHref: phoneHref } = useWhatsapp()
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return

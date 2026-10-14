@@ -3,8 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useApi } from '../../hooks/useApi.js'
 import { useDialog } from '../../hooks/useDialog.js'
 import { toQuery } from '../../lib/api.js'
-import { phoneDisplay } from '../../lib/contact.js'
-import { whatsappLink } from '../../lib/whatsapp.js'
+import { useWhatsapp } from '../../lib/whatsapp.js'
 import { useAuth } from '../../store/authStore.js'
 import { cartCount, useCart } from '../../store/cartStore.js'
 import CurrencyToggle from '../CurrencyToggle.jsx'
@@ -41,7 +40,8 @@ export default function Header() {
   const user = useAuth((s) => s.user)
   const categories = useApi('/categories').data?.items ?? []
   const origins = useApi('/products/filters').data?.origins ?? []
-  const help = whatsappLink('Hello Geological Kingdom, I would like help choosing a gemstone.')
+  const whatsappApi = useWhatsapp()
+  const help = whatsappApi.link('Hello Geological Kingdom, I would like help choosing a gemstone.')
 
   // Close overlays when navigating
   const [lastPath, setLastPath] = useState(pathname + search)
@@ -76,7 +76,7 @@ export default function Header() {
                 </span>
                 <span className="leading-tight">
                   <span className="block text-[10px] uppercase tracking-[0.2em] text-muted">Need help choosing?</span>
-                  <span className="text-sm text-emerald-900 group-hover:text-gold-600">{phoneDisplay ?? 'Chat with us'}</span>
+                  <span className="text-sm text-emerald-900 group-hover:text-gold-600">{whatsappApi.display ?? 'Chat with us'}</span>
                 </span>
               </a>
             )}

@@ -99,7 +99,7 @@ export const storeSettingsBody = z.object({
     .string()
     .trim()
     .transform((v) => v.replace(/[\s()-]/g, '').replace(/^(\+|00)/, ''))
-    .pipe(z.string().regex(/^(\d{8,15})?$/, 'Enter the number in international format, e.g. +92 300 1234567'))
+    .pipe(z.string().regex(/^([1-9]\d{7,14})?$/, 'Enter the number with its country code, e.g. +92 300 1234567'))
     .optional(),
   lowStockThreshold: z.number().int().min(0).max(1000).optional(),
 });

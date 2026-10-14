@@ -125,6 +125,7 @@ describe('store settings', () => {
 
     assert.equal((await admin.put('/api/admin/settings/store', { whatsappNumber: '0092 300 1234567' })).data.settings.whatsappNumber, '923001234567');
     assert.equal((await admin.put('/api/admin/settings/store', { whatsappNumber: 'call me' })).status, 400);
+    assert.equal((await admin.put('/api/admin/settings/store', { whatsappNumber: '0300 1234567' })).status, 400); // no country code
     assert.equal((await admin.put('/api/admin/settings/store', { whatsappNumber: '' })).data.settings.whatsappNumber, '');
     assert.equal((await anon.get('/api/settings/store')).data.whatsappNumber, null);
   });

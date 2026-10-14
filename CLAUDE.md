@@ -49,6 +49,12 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Modals (drawers, lightbox) use `hooks/useDialog.js`; anything inside a sticky/transformed parent must be portalled to `document.body`
 - `<title>`/`<meta>` are rendered in page components (React 19 hoists them); keep none in index.html
 
+## Admin dashboard & settings
+- `/admin` is the dashboard (`GET /api/admin/dashboard`): sales = money received (payment.status paid, not cancelled, dated by `payment.paidAt`; COD counts once delivered), bucketed in Asia/Karachi time — 30 days and 12 months; plus orders by status, top products (12 months, by revenue), low stock, open investigations, recent orders
+- Charts are hand-made SVG (`components/admin/BarChart.jsx`, no chart library): hover/focus tooltip, sr-only table
+- Settings (`/admin/settings`, `PUT /api/admin/settings/store`): exchange rate, shipping, payment accounts, `whatsappNumber` (digits, must start with the country code) and `lowStockThreshold`
+- The storefront loads `GET /api/settings/store` on start (`loadStoreInfo` in `lib/whatsapp.js`); components read the number via `useWhatsapp()`. `VITE_WHATSAPP_NUMBER` is only the fallback until one is saved
+
 ## Orders & payments
 - Totals are always recomputed on the server (`services/pricing.js`); `expectedTotalPKR` from the client only guards against silent price changes (409)
 - Stock is reserved at order time with atomic conditional `$inc` per stone and rolled back on partial failure (`services/stock.js`); cancellation releases it once (`stockReleased` flag). Needs real MongoDB: FerretDB is not atomic

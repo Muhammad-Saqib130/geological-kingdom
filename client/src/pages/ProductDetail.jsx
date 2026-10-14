@@ -8,7 +8,7 @@ import ProductGrid from '../components/product/ProductGrid.jsx'
 import { useApi } from '../hooks/useApi.js'
 import { TREATMENT_NOTES } from '../lib/catalog.js'
 import { imageUrl } from '../lib/images.js'
-import { whatsappLink } from '../lib/whatsapp.js'
+import { useWhatsapp } from '../lib/whatsapp.js'
 import { useCart } from '../store/cartStore.js'
 import { formatMoney, useCurrency, useDisplayCurrency } from '../store/currencyStore.js'
 import NotFound from './NotFound.jsx'
@@ -45,7 +45,8 @@ function ProductView({ product, related }) {
   ].filter(([, v]) => v)
 
   const url = typeof window !== 'undefined' ? window.location.href : ''
-  const inquiry = whatsappLink(
+  const whatsappApi = useWhatsapp()
+  const inquiry = whatsappApi.link(
     `Hello Geological Kingdom, I'm interested in the ${product.name} (${product.carat} ct${product.sku ? `, ref ${product.sku}` : ''}).\n${url}`,
   )
 

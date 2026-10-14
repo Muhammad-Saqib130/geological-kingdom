@@ -32,6 +32,6 @@ services:
       # Add the three CLOUDINARY_* variables and remove this before taking real orders.
       - key: ALLOW_LOCAL_UPLOADS
         value: "true"
-      # Shown as WhatsApp contact links on the site (international format, no +)
+      # Fallback WhatsApp number until one is saved in Admin > Settings (international format, no +)
       - key: VITE_WHATSAPP_NUMBER
         value: "923000000000"

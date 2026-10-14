@@ -275,6 +275,7 @@ export async function handle(path, { method = 'GET', body } = {}) {
 
   if (method === 'GET') {
     if (p === '/settings/currency') return ok({ base: 'PKR', pkrPerUsd: PKR_PER_USD })
+    if (p === '/settings/store') return ok({ pkrPerUsd: PKR_PER_USD, whatsappNumber: null })
     if (p === '/auth/session') return ok({ user: null })
     if (p === '/home') {
       const all = products()

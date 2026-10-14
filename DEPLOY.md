@@ -65,14 +65,15 @@ On GitHub, open the pull request "Deploy to Render with MongoDB Atlas" and click
 On the first start, the server fills the empty database with the 12 sample gemstones and
 creates your admin account. Sign in at `/login` with the email and password from step 3.4.
 Then, in the admin, go to:
-- **Settings**: set the exchange rate, shipping prices and your real bank, JazzCash and Easypaisa
-  numbers. Customers see these when they pay by transfer.
+- **Settings**: set the exchange rate, shipping prices, your WhatsApp number and your real bank,
+  JazzCash and Easypaisa numbers. Customers see the account details when they pay by transfer.
 - **Products**: edit or delete the samples and add your own stones.
 
 ### Change the WhatsApp number
 
-In Render, open the service, then **Environment**. Set `VITE_WHATSAPP_NUMBER` to your number in
-international format without the `+` (e.g. `923001234567`). Click **Save, rebuild, and deploy**.
+In the admin, go to **Settings** and fill in **WhatsApp number** (e.g. `+92 300 1234567`), then click
+**Save settings**. The site uses it straight away. Until you save one, the site uses the
+placeholder `VITE_WHATSAPP_NUMBER` from Render.
 
 ## 4. Before taking real orders
 

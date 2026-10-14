@@ -17,11 +17,12 @@ import OrderStatus from './pages/OrderStatus.jsx'
 import ProductDetail from './pages/ProductDetail.jsx'
 import Register from './pages/Register.jsx'
 import Shop from './pages/Shop.jsx'
-import { useCurrency } from './store/currencyStore.js'
 import { DEMO } from './lib/api.js'
+import { loadStoreInfo } from './lib/whatsapp.js'
 
 // Admin code is split into its own bundle so shoppers never download it.
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout.jsx'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard.jsx'))
 const AdminProducts = lazy(() => import('./pages/admin/AdminProducts.jsx'))
 const ProductForm = lazy(() => import('./pages/admin/ProductForm.jsx'))
 const AdminHomepage = lazy(() => import('./pages/admin/AdminHomepage.jsx'))
@@ -34,8 +35,7 @@ const AdminInvestigationDetail = lazy(() => import('./pages/admin/AdminInvestiga
 const Loading = () => <p className="p-10 text-center text-sm text-muted" role="status">Loading…</p>
 
 export default function App() {
-  const loadRate = useCurrency((s) => s.loadRate)
-  useEffect(() => { loadRate() }, [loadRate])
+  useEffect(() => { loadStoreInfo() }, [])
 
   return (
     <>
@@ -70,7 +70,7 @@ export default function App() {
             />
           ) : (
             <Route path="admin" element={<AdminLayout />}>
-              <Route index element={<AdminProducts />} />
+              <Route index element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
               <Route path="products/new" element={<ProductForm />} />
               <Route path="products/:id" element={<ProductForm />} />

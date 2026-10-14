@@ -4,11 +4,12 @@ import CartLine from '../components/cart/CartLine.jsx'
 import { BagIcon, WhatsAppIcon } from '../components/icons.jsx'
 import Price from '../components/Price.jsx'
 import { api } from '../lib/api.js'
-import { whatsappLink } from '../lib/whatsapp.js'
+import { useWhatsapp } from '../lib/whatsapp.js'
 import { cartSubtotal, useCart } from '../store/cartStore.js'
 import { formatMoney, useCurrency, useDisplayCurrency } from '../store/currencyStore.js'
 
 export default function Cart() {
+  const whatsappApi = useWhatsapp()
   const items = useCart((s) => s.items)
   const applyQuote = useCart((s) => s.applyQuote)
   const [status, setStatus] = useState('checking') // checking | ok | error
@@ -62,7 +63,7 @@ export default function Cart() {
     ...available.map((i) => `• ${i.name} (${i.carat} ct)${i.qty > 1 ? ` × ${i.qty}` : ''}: ${formatMoney(i.pricePKR * i.qty, 'PKR')}`),
     `Subtotal: ${formatMoney(subtotal, 'PKR')}${currency === 'USD' ? ` (≈ ${formatMoney(fromPKR(subtotal), 'USD')})` : ''}`,
   ].join('\n')
-  const whatsappOrder = whatsappLink(orderText)
+  const whatsappOrder = whatsappApi.link(orderText)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
