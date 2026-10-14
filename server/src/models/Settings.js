@@ -18,6 +18,11 @@ const settingsSchema = new mongoose.Schema(
       jazzcash: { accountTitle: String, number: String },
       easypaisa: { accountTitle: String, number: String },
     },
+    // Public contact number for WhatsApp links, digits in international format (e.g. 923001234567).
+    // Empty = the storefront falls back to its build-time VITE_WHATSAPP_NUMBER.
+    whatsappNumber: { type: String, default: '' },
+    // Dashboard alert when an active product has this many or fewer in stock
+    lowStockThreshold: { type: Number, min: 0, default: 1 },
     // Photos for the home page; the storefront shows illustrated fallbacks when empty.
     homepage: {
       heroImage: { type: imageSchema, default: undefined }, // full-width hero background

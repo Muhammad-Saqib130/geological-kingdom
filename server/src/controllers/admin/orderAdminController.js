@@ -94,9 +94,23 @@ export const storeSettingsBody = z.object({
       easypaisa: z.object({ accountTitle: s(80), number: s(20) }).optional(),
     })
     .optional(),
+  // Typed as "+92 300 1234567" or "0092…"; stored as digits only. Empty clears it.
+  whatsappNumber: z
+    .string()
+    .trim()
+    .transform((v) => v.replace(/[\s()-]/g, '').replace(/^(\+|00)/, ''))
+    .pipe(z.string().regex(/^(\d{8,15})?$/, 'Enter the number in international format, e.g. +92 300 1234567'))
+    .optional(),
+  lowStockThreshold: z.number().int().min(0).max(1000).optional(),
 });
 
-const storeJSON = (st) => ({ pkrPerUsd: st.pkrPerUsd, shipping: st.shipping, paymentAccounts: st.paymentAccounts ?? {} });
+const storeJSON = (st) => ({
+  pkrPerUsd: st.pkrPerUsd,
+  shipping: st.shipping,
+  paymentAccounts: st.paymentAccounts ?? {},
+  whatsappNumber: st.whatsappNumber ?? '',
+  lowStockThreshold: st.lowStockThreshold ?? 1,
+});
 
 export async function getStoreSettings(_req, res) {
   res.json({ settings: storeJSON(await Settings.get()) });
@@ -104,8 +118,10 @@ export async function getStoreSettings(_req, res) {
 
 export async function updateStoreSettings(req, res) {
   const st = await Settings.get();
-  const { pkrPerUsd, shipping, paymentAccounts } = req.validated.body;
+  const { pkrPerUsd, shipping, paymentAccounts, whatsappNumber, lowStockThreshold } = req.validated.body;
   if (pkrPerUsd !== undefined) st.pkrPerUsd = pkrPerUsd;
+  if (whatsappNumber !== undefined) st.whatsappNumber = whatsappNumber;
+  if (lowStockThreshold !== undefined) st.lowStockThreshold = lowStockThreshold;
   for (const [k, v] of Object.entries(shipping ?? {})) st.set(`shipping.${k}`, v);
   for (const [method, fields] of Object.entries(paymentAccounts ?? {})) {
     for (const [k, v] of Object.entries(fields)) st.set(`paymentAccounts.${method}.${k}`, v);

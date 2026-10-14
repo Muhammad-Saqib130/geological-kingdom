@@ -114,6 +114,7 @@ const orderSchema = new mongoose.Schema(
 );
 
 orderSchema.index({ createdAt: -1 });
+orderSchema.index({ 'payment.status': 1, 'payment.paidAt': -1 }); // dashboard sales
 
 orderSchema.set('toJSON', toJSON);
 

@@ -37,6 +37,7 @@ import {
   updateResult,
   updateStatus as updateInvestigationStatus,
 } from '../../controllers/admin/investigationAdminController.js';
+import { getDashboard } from '../../controllers/admin/dashboardController.js';
 import { getHomepage, homepageBody, updateHomepage } from '../../controllers/admin/settingsAdminController.js';
 import { localQuery, signBody, signUpload, uploadLocal } from '../../controllers/admin/uploadController.js';
 import { requireAdmin } from '../../middleware/auth.js';
@@ -51,6 +52,8 @@ router.use((_req, res, next) => {
   res.set('Cache-Control', 'no-store');
   next();
 });
+
+router.get('/dashboard', getDashboard);
 
 router.get('/products', validate(listQuery, 'query'), listProducts);
 router.post('/products', validate(createProductBody), createProduct);
