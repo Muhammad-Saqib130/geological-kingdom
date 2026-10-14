@@ -86,6 +86,9 @@ Add these in Render, under **Environment**, and click **Save, rebuild, and deplo
 
 Then **delete** `ALLOW_LOCAL_UPLOADS`, and upload your product photos again.
 
+Gem Investigation reports can be PDFs. New Cloudinary accounts block PDF links by default. To allow
+them, go to **Settings**, then **Security**, and turn on **Allow delivery of PDF and ZIP files**.
+
 **Order emails.** Any SMTP provider works. For Gmail, create an
 [App Password](https://myaccount.google.com/apppasswords), then add:
 - `SMTP_HOST` = `smtp.gmail.com`

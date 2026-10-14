@@ -47,6 +47,7 @@ function load() {
   return { stock: {}, orders: [], seq: 0 }
 }
 let state = load()
+state.investigations ??= []
 function save() {
   try {
     localStorage.setItem(STORE_KEY, JSON.stringify(state))
@@ -214,6 +215,56 @@ function createOrder(body) {
   return { orderNumber: order.orderNumber, token: order.token }
 }
 
+// Gem Investigation requests (kept in this browser only)
+const ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'
+const randomId = () => {
+  const pick = () => Array.from({ length: 4 }, () => ALPHABET[Math.floor(Math.random() * ALPHABET.length)]).join('')
+  return `GI-${pick()}-${pick()}`
+}
+
+function createInvestigation(body) {
+  const { contact = {}, gem = {}, photos = [], certificate } = body
+  const details = []
+  if (!contact.name?.trim()) details.push({ path: 'contact.name', message: 'Enter your name' })
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email ?? '')) details.push({ path: 'contact.email', message: 'Enter a valid email address' })
+  if (!/^\+?[0-9 ()-]{7,20}$/.test(contact.whatsapp ?? '')) details.push({ path: 'contact.whatsapp', message: 'Enter a WhatsApp number with country code' })
+  if (!gem.type?.trim()) details.push({ path: 'gem.type', message: 'Tell us what gemstone it is said to be' })
+  if (!gem.purchasedFrom?.trim()) details.push({ path: 'gem.purchasedFrom', message: 'Tell us where you bought it' })
+  if (!photos.length) details.push({ path: 'photos', message: 'Add at least one photo' })
+  if (details.length) fail(400, 'Validation failed', details)
+
+  const now = new Date().toISOString()
+  const inv = {
+    id: randomId(),
+    trackingId: randomId(),
+    token: `demo-${Date.now()}`,
+    contact: { ...contact, email: contact.email.trim().toLowerCase() },
+    gem,
+    photos,
+    certificate,
+    feeUSD: 10 * gem.count,
+    status: 'received',
+    statusHistory: [{ status: 'received', at: now }],
+    createdAt: now,
+    updatedAt: now,
+  }
+  state.investigations = [inv, ...state.investigations].slice(0, 5) // photos are stored inline; keep a few
+  save()
+  return { trackingId: inv.trackingId, token: inv.token, feeUSD: inv.feeUSD }
+}
+
+function trackInvestigation({ trackingId = '', email, token }) {
+  const id = trackingId.toUpperCase().replace(/[\s-]/g, '').replace(/^GI/, '')
+  const inv = state.investigations.find((i) => i.trackingId.replace(/-/g, '').slice(2) === id)
+  if (!inv || !((email && inv.contact.email === email.trim().toLowerCase()) || (token && token === inv.token))) {
+    fail(404, 'We could not find a request with that tracking ID and email address')
+  }
+  const view = structuredClone(inv)
+  delete view.token
+  view.contact = { name: inv.contact.name, country: inv.contact.country }
+  return { investigation: view }
+}
+
 // path is like "/products?x=1"; returns parsed JSON-like data or throws ApiError
 export async function handle(path, { method = 'GET', body } = {}) {
   await new Promise((r) => setTimeout(r, 120)) // feel like a network call
@@ -278,6 +329,11 @@ export async function handle(path, { method = 'GET', body } = {}) {
     }
     if (p === '/checkout/quote') return ok(priceCart(body.items, body.country))
     if (p === '/orders') return ok(createOrder(body))
+    if (p === '/investigations/uploads/sign') {
+      return ok({ provider: 'demo', uploadUrl: '', fields: {}, maxBytes: 10 * 1024 * 1024, accept: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'heic', 'heif'] })
+    }
+    if (p === '/investigations') return ok(createInvestigation(body))
+    if (p === '/investigations/track') return ok(trackInvestigation(body))
     if (p === '/newsletter') return ok({ message: "You're on the list (demo: nothing was saved)." })
     if (['/auth/login', '/auth/register'].includes(p)) fail(400, 'Accounts are available on the live site. In this demo you can shop and check out as a guest.')
     if (p === '/auth/logout') return null

@@ -59,6 +59,14 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Email: order confirmation only (`emails/orderConfirmation.js`), sent on placement (COD/manual) or on payment (card). Without SMTP it is saved to `server/mail-outbox/`
 - Shipping rates, exchange rate and payment account details live in Settings (Admin > Settings)
 
+## Gem Investigation
+- Public: `/investigation` (explainer + request form), `/investigation/track[/:trackingId]` (tracking ID + email, or `?token=` from the email link)
+- API: `POST /api/investigations` (fee = $10 × gem count, computed on the server), `POST /api/investigations/track`, photo uploads via `/api/investigations/uploads/*` (folder `investigations`, rate-limited by `INVESTIGATION_RATE_LIMIT`)
+- Tracking IDs are random `GI-XXXX-XXXX` (no 0/O/1/I/L); `normalizeTrackingId` accepts loose input. Link tokens are HMACs (`services/orderAccess.js`)
+- Statuses: received → contacted → payment_arranged → in_progress → completed, plus cancelled; admin may set any status, but completed needs a saved verdict + summary
+- Customers never see internal notes or status notes; the result shows only once completed. Emails: on receipt and on completion (`emails/investigation.js`)
+- Admin: `/admin/investigations`; reports (image or PDF) upload to folder `investigation-reports` (the only folder that accepts PDF); replaced reports are deleted
+
 ## Images
 - `server/src/services/storage`: Cloudinary when `CLOUDINARY_*` are set (signed direct uploads), otherwise local files in `server/uploads` (dev only; production requires Cloudinary unless `ALLOW_LOCAL_UPLOADS=true` for a throwaway preview)
 - Only assets uploaded through `/api/admin/uploads` can be attached to products; removed images are deleted after save

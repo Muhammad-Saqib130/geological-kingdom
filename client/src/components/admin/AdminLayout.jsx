@@ -5,6 +5,7 @@ import Logo from '../Logo.jsx'
 
 const nav = [
   { to: '/admin/orders', label: 'Orders' },
+  { to: '/admin/investigations', label: 'Investigations' },
   { to: '/admin/products', label: 'Products' },
   { to: '/admin/homepage', label: 'Homepage' },
   { to: '/admin/settings', label: 'Settings' },
@@ -41,7 +42,7 @@ export default function AdminLayout() {
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:gap-6 sm:px-6">
           <Logo />
           <span className="hidden text-xs uppercase tracking-[0.2em] text-gold-600 sm:inline">Admin</span>
-          <nav aria-label="Admin" className="flex flex-1 gap-5">
+          <nav aria-label="Admin" className="scrollbar-none flex min-w-0 flex-1 gap-5 overflow-x-auto whitespace-nowrap">
             {nav.map((n) => (
               <NavLink key={n.to} to={n.to} className={({ isActive }) => `text-sm ${isActive ? 'font-semibold text-emerald-900' : 'text-muted hover:text-emerald-900'}`}>
                 {n.label}

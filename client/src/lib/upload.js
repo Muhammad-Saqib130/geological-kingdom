@@ -1,7 +1,7 @@
 import { ApiError, api } from './api.js'
 
 const BASE = import.meta.env.VITE_API_URL ?? ''
-const EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/heic': 'heic', 'image/heif': 'heif' }
+const EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif', 'image/heic': 'heic', 'image/heif': 'heif', 'application/pdf': 'pdf' }
 
 const extensionOf = (file) => EXT[file.type] ?? file.name.split('.').pop()?.toLowerCase()
 
@@ -39,7 +39,7 @@ function send(url, body, { onProgress, withCredentials, headers = {} }) {
   })
 }
 
-// Uploads one image and returns { url, publicId, width, height }.
+// Uploads one image (or a PDF, where the folder allows it) and returns { url, publicId, width, height, format }.
 // Validates type and size against what the server allows before sending anything.
 // `signPath` lets non-admin flows (payment proofs) use their own signing endpoint.
 export async function uploadImage(file, folder, { onProgress, signPath } = {}) {
@@ -65,14 +65,14 @@ export async function uploadImage(file, folder, { onProgress, signPath } = {}) {
     for (const [k, v] of Object.entries(ticket.fields)) form.append(k, v)
     form.append('file', file)
     const res = await send(ticket.uploadUrl, form, { onProgress, withCredentials: false })
-    return { url: res.secure_url, publicId: res.public_id, width: res.width, height: res.height }
+    return { url: res.secure_url, publicId: res.public_id, width: res.width, height: res.height, format: res.format, bytes: res.bytes }
   }
 
-  const size = await dimensions(file)
+  const size = extensionOf(file) === 'pdf' ? {} : await dimensions(file)
   const res = await send(`${BASE}${ticket.uploadUrl}`, file, {
     onProgress,
     withCredentials: true,
     headers: { 'Content-Type': file.type || 'application/octet-stream' },
   })
-  return { url: res.url, publicId: res.publicId, ...size }
+  return { url: res.url, publicId: res.publicId, format: res.format, bytes: res.bytes, ...size }
 }

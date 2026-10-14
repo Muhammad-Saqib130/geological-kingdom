@@ -8,6 +8,8 @@ import MyOrders from './pages/account/MyOrders.jsx'
 import Cart from './pages/Cart.jsx'
 import Checkout from './pages/Checkout.jsx'
 import Home from './pages/Home.jsx'
+import Investigation from './pages/investigation/Investigation.jsx'
+import TrackInvestigation from './pages/investigation/TrackInvestigation.jsx'
 import InfoPage from './pages/InfoPage.jsx'
 import Login from './pages/Login.jsx'
 import NotFound from './pages/NotFound.jsx'
@@ -26,6 +28,8 @@ const AdminHomepage = lazy(() => import('./pages/admin/AdminHomepage.jsx'))
 const AdminOrders = lazy(() => import('./pages/admin/AdminOrders.jsx'))
 const AdminOrderDetail = lazy(() => import('./pages/admin/AdminOrderDetail.jsx'))
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings.jsx'))
+const AdminInvestigations = lazy(() => import('./pages/admin/AdminInvestigations.jsx'))
+const AdminInvestigationDetail = lazy(() => import('./pages/admin/AdminInvestigationDetail.jsx'))
 
 const Loading = () => <p className="p-10 text-center text-sm text-muted" role="status">Loading…</p>
 
@@ -49,10 +53,9 @@ export default function App() {
             <Route path="register" element={<Register />} />
             <Route path="info/:slug" element={<InfoPage />} />
             <Route path="login" element={<Login />} />
-            <Route
-              path="investigation"
-              element={<ComingSoon eyebrow="Gem Investigation · $10" title="Verify a gem you bought elsewhere" body="Our authenticity request form is on its way. In the meantime, contact us on WhatsApp to arrange an investigation." />}
-            />
+            <Route path="investigation" element={<Investigation />} />
+            <Route path="investigation/track" element={<TrackInvestigation />} />
+            <Route path="investigation/track/:trackingId" element={<TrackInvestigation />} />
             <Route
               path="about"
               element={<ComingSoon eyebrow="Our story" title="From Namak Mandi to the world" body="The story of Geological Kingdom is being written. Check back soon." />}
@@ -74,6 +77,8 @@ export default function App() {
               <Route path="homepage" element={<AdminHomepage />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="orders/:number" element={<AdminOrderDetail />} />
+              <Route path="investigations" element={<AdminInvestigations />} />
+              <Route path="investigations/:trackingId" element={<AdminInvestigationDetail />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           )}
