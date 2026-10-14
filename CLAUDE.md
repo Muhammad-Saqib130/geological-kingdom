@@ -25,13 +25,15 @@
 - Mobile-first, accessible, fast
 
 ## Commands
-Requires Node >= 20.12. Copy `server/.env.example` -> `server/.env` and `client/.env.example` -> `client/.env` first.
-- `npm run dev --prefix server` — API on http://localhost:5000 (auto-restarts via `node --watch`)
-- `npm run dev --prefix client` — site on http://localhost:5173 (proxies `/api` to the server)
-- `npm run seed --prefix server` — load sample gems + default exchange rate (`-- --fresh` wipes gems first)
-- `npm run lint --prefix client` / `npm run build --prefix client`
+Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example` -> `server/.env` (set MONGODB_URI) and `client/.env.example` -> `client/.env`.
+- `npm run dev` (root) — starts API (http://localhost:5000) and site (http://localhost:5173) together; Ctrl+C stops both
+- `npm run dev:server` / `npm run dev:client` — start one side only
+- `npm run seed` — load sample gems + default exchange rate (`npm run seed --prefix server -- --fresh` wipes gems first)
+- `npm run lint` / `npm run build` — client lint / production build
+- `GET /api/health` — 200 `{status:"ok", db:"connected"}` when the DB answers a ping, 503 otherwise
 
 ## Layout
-- server/src: `config/` (env via Zod, db), `models/`, `controllers/`, `routes/`, `middleware/` (validate, errorHandler), `scripts/`
+- root: `scripts/dev.js` runs both apps (no extra dependency)
+- server/src: `config/` (env via dotenv + Zod, db), `models/`, `controllers/`, `routes/`, `middleware/` (validate, errorHandler), `scripts/`
 - client/src: `pages/`, `components/`, `store/` (Zustand), `hooks/`, `lib/api.js`
 - Theme tokens (emerald/gold/ivory, fonts) live in `client/src/index.css` under `@theme`
