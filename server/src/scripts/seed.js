@@ -6,10 +6,11 @@ import { env } from '../config/env.js';
 import { Category } from '../models/Category.js';
 import { Product } from '../models/Product.js';
 import { Settings } from '../models/Settings.js';
+import { Testimonial } from '../models/Testimonial.js';
 import { User } from '../models/User.js';
 import { hashPassword } from '../services/authService.js';
 import { slugify } from '../utils/slugify.js';
-import { categories, products } from './seedData.js';
+import { categories, products, testimonials } from './seedData.js';
 
 async function seedCatalog() {
   const ids = new Map();
@@ -25,7 +26,11 @@ async function seedCatalog() {
     doc.set({ ...p, category: ids.get(category) });
     await doc.save();
   }
-  console.log(`Categories: ${categories.length}, products: ${products.length}`);
+  // Sample testimonials are replaced wholesale; real ones (isSample: false) are never touched.
+  await Testimonial.deleteMany({ isSample: true });
+  await Testimonial.insertMany(testimonials.map((t) => ({ ...t, isSample: true })));
+
+  console.log(`Categories: ${categories.length}, products: ${products.length}, sample testimonials: ${testimonials.length}`);
 }
 
 // Creates the admin from ADMIN_EMAIL / ADMIN_PASSWORD. An existing account is promoted to admin,

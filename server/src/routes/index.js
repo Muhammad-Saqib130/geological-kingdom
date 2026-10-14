@@ -5,6 +5,7 @@ import authRoutes from './authRoutes.js';
 import categoryRoutes from './categoryRoutes.js';
 import productRoutes from './productRoutes.js';
 import settingsRoutes from './settingsRoutes.js';
+import storefrontRoutes from './storefrontRoutes.js';
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/products', productRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/', storefrontRoutes);
 
 export default router;

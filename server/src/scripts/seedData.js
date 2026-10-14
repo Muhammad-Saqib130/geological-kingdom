@@ -26,3 +26,10 @@ export const products = [
   { sku: 'GK-TP-001', category: 'Topaz', name: 'Golden Topaz', color: 'Sherry gold', colorHex: '#d99a3a', carat: 5.8, dimensionsMm: '13.0 x 9.2 x 6.4', shape: 'Pear', clarity: 'Loupe clean', origin: 'Katlang, Pakistan', treatment: 'Natural', pricePKR: 115000, description: 'Warm sherry-toned topaz from the Katlang deposit near Mardan.' },
   { sku: 'GK-PE-001', category: 'Peridot', name: 'Peridot Cushion', color: 'Olive green', colorHex: '#8fb83a', carat: 6.1, dimensionsMm: '11.8 x 11.6 x 7.0', shape: 'Cushion', clarity: 'Eye clean', origin: 'Kohistan, Pakistan', treatment: 'Natural', pricePKR: 54000, description: 'Lively, high-altitude peridot from Kohistan with excellent transparency.' },
 ];
+
+// Development placeholders, flagged isSample so the site labels them. Replace with real reviews before launch.
+export const testimonials = [
+  { name: 'Sample review', location: 'Lahore', rating: 5, sortOrder: 1, quote: 'The emerald arrived exactly as photographed, with the origin and oil treatment clearly stated. Packaging was beautiful and insured.' },
+  { name: 'Sample review', location: 'London, UK', rating: 5, sortOrder: 2, quote: 'I sent photos of a sapphire I bought on holiday for a Gem Investigation. Clear, honest answer within days.' },
+  { name: 'Sample review', location: 'Dubai, UAE', rating: 5, sortOrder: 3, quote: 'Fair prices in USD, quick replies on WhatsApp, and the aquamarine is even brighter in person.' },
+];
