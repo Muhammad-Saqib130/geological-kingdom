@@ -6,12 +6,13 @@ export const useAuth = create((set, get) => ({
   user: null,
   status: 'idle',
 
-  // Restores the session from the httpOnly cookie (once per page load unless forced)
+  // Restores the session from the httpOnly cookie (once per page load unless forced).
+  // /auth/session answers 200 { user: null } for guests, so no console error per visit.
   load: async ({ force = false } = {}) => {
     if (!force && get().status !== 'idle') return
     set({ status: 'loading' })
     try {
-      const { user } = await api('/auth/me')
+      const { user } = await api('/auth/session')
       set({ user, status: 'ready' })
     } catch {
       set({ user: null, status: 'ready' })

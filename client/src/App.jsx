@@ -1,13 +1,15 @@
 import { Suspense, lazy, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Layout from './components/Layout.jsx'
+import Layout from './components/layout/Layout.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
 import Toaster from './components/Toaster.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
-import GemDetail from './pages/GemDetail.jsx'
+import Cart from './pages/Cart.jsx'
 import Home from './pages/Home.jsx'
+import InfoPage from './pages/InfoPage.jsx'
 import Login from './pages/Login.jsx'
 import NotFound from './pages/NotFound.jsx'
+import ProductDetail from './pages/ProductDetail.jsx'
 import Shop from './pages/Shop.jsx'
 import { useCurrency } from './store/currencyStore.js'
 
@@ -30,7 +32,9 @@ export default function App() {
           <Route element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="shop" element={<Shop />} />
-            <Route path="gems/:slug" element={<GemDetail />} />
+            <Route path="gems/:slug" element={<ProductDetail />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="info/:slug" element={<InfoPage />} />
             <Route path="login" element={<Login />} />
             <Route
               path="investigation"

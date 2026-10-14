@@ -40,6 +40,18 @@ Requires Node >= 22. First time: `npm run setup`, then copy `server/.env.example
 - Guards: `requireAuth`, `requireRole(...roles)`, `requireAdmin` in `server/src/middleware/auth.js`
 - `POST /api/auth/logout-all` bumps tokenVersion to revoke every session; registration can never set `role`
 
+## Storefront & admin (client)
+- Pages: `/` home sections, `/shop` (filters in the URL; multi-value filters are repeated params because origins contain commas), `/gems/:slug`, `/cart`, `/info/:slug`, `/login`; admin under `/admin` (lazy-loaded bundle)
+- Cart: Zustand `gk-cart` in localStorage; `POST /api/cart/quote` re-prices from the DB on the cart page; checkout not built yet (WhatsApp order link meanwhile)
+- Session check uses `GET /api/auth/session` (200 `{user:null}` for guests); `/api/auth/me` stays 401 for guests
+- Modals (drawers, lightbox) use `hooks/useDialog.js`; anything inside a sticky/transformed parent must be portalled to `document.body`
+- `<title>`/`<meta>` are rendered in page components (React 19 hoists them); keep none in index.html
+
+## Images
+- `server/src/services/storage`: Cloudinary when `CLOUDINARY_*` are set (signed direct uploads), otherwise local files in `server/uploads` (dev only; production requires Cloudinary)
+- Only assets uploaded through `/api/admin/uploads` can be attached to products; removed images are deleted after save
+- Client: `lib/images.js` adds Cloudinary `f_auto,q_auto,w_*` transforms
+
 ## Layout
 - root: `scripts/dev.js` runs both apps (no extra dependency)
 - server/src: `config/` (env via dotenv + Zod, db), `models/`, `controllers/`, `routes/`, `middleware/` (validate, errorHandler), `scripts/`
