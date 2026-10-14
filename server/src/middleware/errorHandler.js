@@ -24,6 +24,11 @@ export function errorHandler(err, _req, res, _next) {
   if (err instanceof mongoose.Error.ValidationError) {
     return res.status(400).json({ error: 'Validation failed', details: Object.values(err.errors).map((e) => ({ path: e.path, message: e.message })) });
   }
+  // Database unreachable (network drop, Atlas failover): temporary, so tell clients to retry
+  if (['MongoNetworkError', 'MongoServerSelectionError', 'MongoNetworkTimeoutError'].includes(err?.name)) {
+    console.error(`Database unavailable: ${err.message}`);
+    return res.status(503).set('Retry-After', '10').json({ error: 'Service temporarily unavailable. Please try again shortly.' });
+  }
   if (err?.code === 11000) {
     return res.status(409).json({ error: 'Duplicate value', details: err.keyValue });
   }

@@ -1,6 +1,5 @@
 // Loads sample gems and the default exchange rate. Usage: npm run seed [-- --fresh]
-import mongoose from 'mongoose';
-import { connectDB } from '../config/db.js';
+import { connectDB, disconnectDB } from '../config/db.js';
 import { Gem } from '../models/Gem.js';
 import { Settings } from '../models/Settings.js';
 
@@ -31,5 +30,5 @@ try {
   const settings = await Settings.get();
   console.log(`Seeded ${gems.length} gems. Exchange rate: ${settings.pkrPerUsd} PKR/USD`);
 } finally {
-  await mongoose.disconnect();
+  await disconnectDB();
 }

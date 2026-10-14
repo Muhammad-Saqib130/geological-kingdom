@@ -1,4 +1,10 @@
+import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
 import { z } from 'zod';
+
+// Always load server/.env, whatever directory the process was started from.
+// Variables already set in the environment (e.g. by the host in production) take precedence.
+dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)), quiet: true });
 
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -17,6 +23,7 @@ if (!parsed.success) {
   for (const issue of parsed.error.issues) {
     console.error(`  ${issue.path.join('.')}: ${issue.message}`);
   }
+  console.error('Copy server/.env.example to server/.env and fill in the values.');
   process.exit(1);
 }
 
